@@ -50,7 +50,10 @@
       <el-button @click="handleLeft('left')">左对齐</el-button>
       <el-button @click="handleLeft('right')">右对齐</el-button>
       <el-button @click="handleLeft('top')">上对齐</el-button>
-      <el-button @click="handleLeft('bottom')">下对齐</el-button>
+      <el-button
+        @click="handleLeft('bottom')"
+        style="margin-top:12px"
+      >下对齐</el-button>
       <!-- 任务节点允许选择人员 -->
       <el-form-item
         label="节点人员"

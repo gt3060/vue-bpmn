@@ -153,6 +153,14 @@ export default {
     drawShape, // 📌
     '4'
   ),
+  'create.dengyu': createAction(
+    'bpmn:IntermediateThrowEvent',
+    'event',
+    'bpmn-icon-start-event-none', // 🙋‍♂️ 使用图片后，记得修改成自己的类名
+    '并发',
+    '',
+    drawShape
+  ),
 }
 
 function createAction(
@@ -173,8 +181,6 @@ function createAction(
     type,
     group,
     className,
-    title,
-    imageUrl,
     infoType
   )
   function createListener(event, autoActivate, elementFactory, create) {
@@ -224,12 +230,15 @@ function drawShape(parentNode, element, bpmnRenderer) {
     const rect = drawRect(parentNode, width, height, TASK_BORDER_RADIUS, color)
     prependTo(rect, parentNode)
 
-    const circle = drawCircle(parentNode, 10, 10, 'red')
-    svgAttr(circle, {
-      transform: 'translate(75, 10)',
-    })
+    // const circle = drawCircle(parentNode, 10, 10, 'red')
+    // svgAttr(circle, {
+    //   transform: 'translate(75, 10)',
+    // })
     svgRemove(shape)
     return shape
+  }
+  if (is(element, 'bpmn:IntermediateThrowEvent')) {
+    console.log('++++bpmn:IntermediateThrowEvent', shape)
   }
 
   // const rect = drawRect(parentNode, 30, 20, TASK_BORDER_RADIUS, color);

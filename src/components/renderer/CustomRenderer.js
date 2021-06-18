@@ -23,18 +23,17 @@ export default class CustomRenderer extends BaseRenderer {
     return isAny(element, ['bpmn:Task', 'bpmn:Event']) && !element.labelTarget
   }
 
-  // drawShape(parentNode, element) {
-  //   const paletteEntries = this.paletteEntries
-  //   console.log('paletteEntries', paletteEntries, element)
-  //   const shape = find(paletteEntries, (entry) => {
-  //     return is(element, entry.type)
-  //   })
-  //   console.log('shapeshape', shape)
-  //   if (shape && shape.drawShape instanceof Function) {
-  //     return shape.drawShape(parentNode, element, this.bpmnRenderer)
-  //   }
-  //   return this.bpmnRenderer.drawShape(parentNode, element)
-  // }
+  drawShape(parentNode, element) {
+    const paletteEntries = this.paletteEntries
+    const shape = find(paletteEntries, (entry) => {
+      return is(element, entry.type)
+    })
+    if (shape && shape.drawShape instanceof Function) {
+      console.log('drawShape', shape)
+      return shape.drawShape(parentNode, element, this.bpmnRenderer)
+    }
+    return this.bpmnRenderer.drawShape(parentNode, element)
+  }
 
   getShapePath(shape) {
     if (is(shape, 'bpmn:Task')) {

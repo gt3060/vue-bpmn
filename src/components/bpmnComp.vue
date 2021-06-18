@@ -258,20 +258,20 @@ export default {
     },
     saveViewer () {
       let that = this;
-      try {
-        this.viewer.saveXML({ format: true }).then(res => {
-          console.log(res);
-          // 将xml转换为file
-          this.xmlSetFile(res);
-        })
-      } catch (err) {
-        console.log(err);
-      }
-      // this.viewer.saveXML({ format: true }, function (err, xml) {
-      //   console.log(err, xml);
-      //   // 将xml转换为file
-      //   that.xmlSetFile(xml);
-      // })
+      // try {
+      //   this.viewer.saveXML({ format: true }).then(res => {
+      //     console.log(res);
+      //     // 将xml转换为file
+      //     this.xmlSetFile(res);
+      //   })
+      // } catch (err) {
+      //   console.log(err);
+      // }
+      this.viewer.saveXML({ format: true }, function (err, xml) {
+        console.log(err, xml);
+        // 将xml转换为file
+        that.xmlSetFile(xml);
+      })
     },
     xmlSetFile (xml) {
       // 把xml转换为URI，下载要用到的
