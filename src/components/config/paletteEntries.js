@@ -161,6 +161,15 @@ export default {
     '',
     drawShape
   ),
+  'create.init-task': createAction(
+    'bpmn:signalEventDefinition',
+    'event',
+    'bpmn-icon-start-event-none',
+    '并发1',
+    '',
+    drawShape,
+    '7'
+  ),
 }
 
 function createAction(
@@ -176,20 +185,35 @@ function createAction(
   // if (action === 'click') {
   // handler(originalEvent, autoActivate, elementFactory, create)
   // }
-  console.log(
-    'typetypetypeytpe',
-    type,
-    group,
-    className,
-    infoType
-  )
+  console.log('typetypetypeytpe', type, group, className, infoType)
   function createListener(event, autoActivate, elementFactory, create) {
-    console.log('++++elementfactory', elementFactory, type, infoType)
-    localStorage.setItem('infoType', infoType)
-    var shape
-    shape = elementFactory.createShape({
+    console.log(
+      '++++elementfactory*****************',
+      elementFactory,
       type,
-    })
+      infoType
+    )
+    localStorage.setItem('infoType', infoType)
+    let isCustomShape = ['bpmn:IntermediateThrowEvent']
+    var shape
+    if (isCustomShape.includes(type)) {
+      let width, height
+      if (type === 'bpmn:IntermediateThrowEvent') {
+        width = 330
+        height = 30
+      }
+      shape = elementFactory.createShape({
+        type,
+        width,
+        height,
+      })
+    } else {
+      shape = elementFactory.createShape({
+        type,
+      })
+    }
+
+    console.log('**********shape,elementFactory*************', shape)
     create.start(event, shape)
   }
 
@@ -220,39 +244,56 @@ function createAction(
 }
 
 function drawShape(parentNode, element, bpmnRenderer) {
-  const shape = bpmnRenderer.drawShape(parentNode, element)
+  let shape
+  let customShapeArr = ['bpmn:IntermediateThrowEvent']
+  if (!customShapeArr.includes(element.type)) {
+    shape = bpmnRenderer.drawShape(parentNode, element)
+  } else {
+    shape = null
+  }
   let color = ''
+  console.log('+bpmnbpmn:Data++++', bpmnRenderer, shape, element)
   if (is(element, 'bpmn:Task')) {
+    let name = element.businessObject.name
     const height = 80
     const width = 100
     element.width = width
     element.height = height
-    const rect = drawRect(parentNode, width, height, TASK_BORDER_RADIUS, color)
-    prependTo(rect, parentNode)
+    let rect = drawRect(parentNode, width, height, TASK_BORDER_RADIUS, color)
+    if (name) {
+      if (name === '获取物料') {
+        color = 'blue'
+        let rect1 = drawRect(parentNode, 12, 12, TASK_BORDER_RADIUS, color)
+        svgAttr(rect1, {
+          transform: 'translate(75, 10)',
+        })
+      } else if (name === '输入物料') {
+        color = 'red'
+        let rect1 = drawRect(parentNode, 12, 12, TASK_BORDER_RADIUS, color)
+        svgAttr(rect1, {
+          transform: 'translate(75, 10)',
+        })
+      }
+      prependTo(rect1, parentNode)
+    }
 
-    // const circle = drawCircle(parentNode, 10, 10, 'red')
-    // svgAttr(circle, {
-    //   transform: 'translate(75, 10)',
-    // })
+    prependTo(rect, parentNode)
     svgRemove(shape)
     return shape
   }
   if (is(element, 'bpmn:IntermediateThrowEvent')) {
-    console.log('++++bpmn:IntermediateThrowEvent', shape)
+    shape = drawLine(parentNode, 10, 300, 'black')
+    shape = drawLine(parentNode, 20, 300, 'black')
+    return shape
   }
-
-  // const rect = drawRect(parentNode, 30, 20, TASK_BORDER_RADIUS, color);
-
-  // svgAttr(rect, {
-  //   transform: 'translate(-20, -10)',
-  // });
-
   return shape
 }
 
 // helpers //////////
 
 // copied from https://github.com/bpmn-io/bpmn-js/blob/master/lib/draw/BpmnRenderer.js
+
+// 自定义画椭圆
 function drawCircle(parentNode, width, height, strokeColor) {
   var cx = width / 2,
     cy = height / 2
@@ -269,6 +310,23 @@ function drawCircle(parentNode, width, height, strokeColor) {
 
   return circle
 }
+
+// 自定义画直线
+function drawLine(parentNode, height, length, strokeColor) {
+  let line = svgCreate('line')
+  svgAttr(line, {
+    x1: 10,
+    y1: height,
+    x2: length + 10,
+    y2: height,
+    stroke: strokeColor || '#000',
+    strokeWidth: 2,
+  })
+  svgAppend(parentNode, line)
+  return line
+}
+
+// 自定义画矩形
 function drawRect(parentNode, width, height, borderRadius, strokeColor) {
   const rect = svgCreate('rect')
 

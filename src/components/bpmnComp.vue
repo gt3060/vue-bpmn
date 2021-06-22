@@ -24,6 +24,7 @@ import propertiesProviderModule from 'bpmn-js-properties-panel/lib/provider/camu
 import propertiesPanelModule from 'bpmn-js-properties-panel'
 import camundaModdleDescriptor from 'camunda-bpmn-moddle/resources/camunda';
 import properComp from './properComp'
+import CustomModeler from './customModeler'
 
 export default {
   name: 'bpmn',
@@ -42,9 +43,11 @@ export default {
     // const index = modules.findIndex(it => it.paletteProvider);
     // modules.splice(index, 1, customPalette);
     console.log('modules', BpmnModeler.prototype._modules)
+    let contextPadProvider = ['value', ''];
 
     // 生成实例
     this.viewer = new BpmnModeler({
+    // this.viewer = new CustomModeler({
       paletteEntries,
       container: canvas,
       keyboard: {
@@ -58,12 +61,17 @@ export default {
         propertiesPanelModule,
         customContextPad,
         customRenderer,
-        customPalette
+        customPalette,
+        contextPadProvider
       ],
+      // additionalModules: [{
+      //   // contextPadProvider: ['value', ''],
+      // }],
       moddleExtensions: {
         camunda: camundaModdleDescriptor
       }
     })
+    console.log('this.viewer.additionalModules', this.viewer.additionalModules)
     this.createNewDiagram() // 新增流程定义
   },
   methods: {
@@ -195,35 +203,43 @@ export default {
       // </bpmn:definitions>
       // `
       const bpmnXmlStr = `<?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_0qnjqfg" targetNamespace="http://bpmn.io/schema/bpmn" exporter="bpmn-js (https://demo.bpmn.io)" exporterVersion="8.6.0">
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_0qnjqfg" targetNamespace="http://bpmn.io/schema/bpmn" exporter="bpmn-js (https://demo.bpmn.io)" exporterVersion="8.6.0">
   <bpmn:process id="Process_0coajcg" isExecutable="false">
-    <bpmn:task id="outputInput_1kcn7j2" name="output1111">
-      <bpmn:extensionElements>
-        <camunda:properties>
-          <camunda:property name="少儿养老险1" value="1111" />
-        </camunda:properties>
-      </bpmn:extensionElements>
+    <bpmn:task id="Activity_1cojvvu" name="输入物料">
+      <bpmn:outgoing>Flow_13cur33</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:task id="test02_00ghtiw" name="002" />
-    <bpmn:startEvent id="Event_1e2fl44">
-      <bpmn:signalEventDefinition id="SignalEventDefinition_0g9cast" />
-    </bpmn:startEvent>
+    <bpmn:task id="Activity_1vzyu40" name="获取物料">
+      <bpmn:outgoing>Flow_1482bqh</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:intermediateThrowEvent id="Event_0tnw83s" name="">
+      <bpmn:incoming>Flow_13cur33</bpmn:incoming>
+      <bpmn:incoming>Flow_1482bqh</bpmn:incoming>
+    </bpmn:intermediateThrowEvent>
+    <bpmn:sequenceFlow id="Flow_13cur33" sourceRef="Activity_1cojvvu" targetRef="Event_0tnw83s" />
+    <bpmn:sequenceFlow id="Flow_1482bqh" sourceRef="Activity_1vzyu40" targetRef="Event_0tnw83s" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_0coajcg">
-      <bpmndi:BPMNShape id="Activity_1kcn7j2_di" bpmnElement="outputInput_1kcn7j2">
-        <dc:Bounds x="250" y="110" width="100" height="80" />
+      <bpmndi:BPMNEdge id="Flow_13cur33_di" bpmnElement="Flow_13cur33">
+        <di:waypoint x="230" y="230" />
+        <di:waypoint x="230" y="275" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1482bqh_di" bpmnElement="Flow_1482bqh">
+        <di:waypoint x="430" y="230" />
+        <di:waypoint x="430" y="275" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Activity_1cojvvu_di" bpmnElement="Activity_1cojvvu">
+        <dc:Bounds x="180" y="150" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_00ghtiw_di" bpmnElement="test02_00ghtiw">
-        <dc:Bounds x="250" y="220" width="100" height="80" />
+      <bpmndi:BPMNShape id="Activity_1vzyu40_di" bpmnElement="Activity_1vzyu40">
+        <dc:Bounds x="380" y="150" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_1q1ef0f_di" bpmnElement="Event_1e2fl44">
-        <dc:Bounds x="502" y="102" width="36" height="36" />
+      <bpmndi:BPMNShape id="Event_0tnw83s_di" bpmnElement="Event_0tnw83s">
+        <dc:Bounds x="155" y="275" width="330" height="30" />
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </bpmn:definitions>
-
       `
       // 将字符串转换成图显示出来
       try {
@@ -240,7 +256,7 @@ export default {
     },
 
 
-     // 获取流程图中所有节点信息
+    // 获取流程图中所有节点信息
     getNodeInfoList () {
       const elementRegistry = this.viewer.get('elementRegistry')
       const userTaskList = elementRegistry.filter(

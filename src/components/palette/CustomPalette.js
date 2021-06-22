@@ -285,6 +285,7 @@ Palette.prototype.trigger = function (action, event, autoActivate) {
   if (!button) {
     return event.preventDefault()
   }
+  console.log('===entries', entries, elementFactory)
 
   entry = entries[domAttr(button, 'data-action')]
 

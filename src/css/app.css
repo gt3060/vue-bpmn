@@ -1,0 +1,9 @@
+.icon-custom {
+  border-radius: 50%;
+  background-size: 65%;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.icon-custom-delete {
+  background-image: url('https://hexo-blog-1256114407.cos.ap-shenzhen-fsi.myqcloud.com/delete.png');
+}

@@ -18,10 +18,14 @@
       <el-form-item label="节点名称">
         <el-input
           v-model="form.name"
-          disabled
+          :disabled="Task"
+          @input="nameChange"
         ></el-input>
       </el-form-item>
-      <el-form-item label="节点内容">
+      <el-form-item
+        label="节点内容"
+        v-if="Task"
+      >
         <el-input
           v-model="form.value"
           @input="valueChange"
@@ -54,6 +58,18 @@
         @click="handleLeft('bottom')"
         style="margin-top:12px"
       >下对齐</el-button>
+      <!-- <el-button
+        @click="processUndo"
+        style="margin-top:12px"
+      >撤销</el-button>
+      <el-button
+        @click="processRedo"
+        style="margin-top:12px"
+      >恢复</el-button>
+      <el-button
+        @click="processRestart"
+        style="margin-top:12px"
+      >重新绘制</el-button> -->
       <!-- 任务节点允许选择人员 -->
       <el-form-item
         label="节点人员"
@@ -174,6 +190,10 @@ export default {
       }
       return this.element.type === "bpmn:UserTask";
     },
+    Task () {
+      if (!this.element) return;
+      return this.element.type === "bpmn:Task"
+    },
     sequenceFlow () {
       if (!this.element) {
         return;
@@ -232,6 +252,7 @@ export default {
       handler (newVal, oldVal) {
         console.log("++++element监听", newVal, this.nameSplit, this.flag, !this.sequenceFlow, this.form);
         if (!this.form.name) {
+          console.log("+++++this.form**************")
           if (this.flag && !this.sequenceFlow) {
             let tempS = localStorage.getItem('infoType');
             localStorage.removeItem('infoType');
@@ -247,7 +268,11 @@ export default {
                 val = '启动定时器';
                 break;
             }
-            this.nameChange(val);
+            let obj = {
+              type: 'task',
+              infoType: tempS
+            }
+            this.nameChange(val, obj);
             this.flag = false;
           }
         } else {
@@ -293,17 +318,17 @@ export default {
       //  监听节点属性变化
       this.modeler.on("element.changed", e => {
         const { element } = e;
-        if (element.__proto__.constructor.name !== 'Connection') {
+        if (element.__proto__.constructor.name !== '  ') {
           this.flag = true;
         }
         console.log('---element.changed', element, this.form, element.__proto__.constructor.name)
         if (!element) return;
         //  新增节点需要更新回属性面板
         if (element.id === this.form.id && element.businessObject.name) {
-          let nameArr = element.businessObject.name.split('：');
-          this.form.name = this.isEmpty(nameArr[0]);
-          this.form.value = this.isEmpty(nameArr[1]);
-          this.form = { ...this.form };
+          this.nameSplit = element.businessObject.name.split('：');
+          this.form.name = this.isEmpty(this.nameSplit[0]);
+          this.form.value = this.isEmpty(this.nameSplit[1]);
+          // this.form = { ...this.form };
         }
       });
     },
@@ -313,15 +338,25 @@ export default {
       return ''
     },
     // 属性面板名称，更新回流程节点
-    nameChange (name) {
+    nameChange (name, obj = {}) {
       const modeling = this.modeler.get("modeling");
       if (this.element) {
         modeling.updateLabel(this.element, name);
       }
+      
     },
     valueChange (value) {
       // this.form.value = value;
       const modeling = this.modeler.get("modeling");
+      console.log("----modeling*************", modeling);
+      // let isShowName = ['']
+      // if (this.sequenceFlow) {
+      //   // let name = this.form.name;
+      //   if (this.element) {
+      //     modeling.updateLabel(this.element, `${value}`);
+      //   }
+      //   return;
+      // }
       let name = this.form.name;
       if (this.element) {
         if (this.form.name) {
@@ -333,13 +368,14 @@ export default {
     },
     // 属性面板颜色，更新回流程节点
     colorChange (color) {
+      console.log("---color", color)
       if (color && this.element) {
         const modeling = this.modeler.get("modeling");
+        console.log(color, '---改变颜色', this.element, modeling)
         modeling.setColor(this.element, {
-          fill: null,
-          stroke: color
+          stroke: color,
         });
-        modeling.updateProperties(this.element, { color: color });
+        // modeling.updateProperties(this.element, { color: color });
       }
     },
     // 属性节点宽度
@@ -370,6 +406,18 @@ export default {
         type: "warning"
       }).then(() => AlignElements.trigger(SelectedElements, align));
     },
+
+    // 恢复
+    processRedo () {
+      this.modeler.get("commandStack").redo();
+    },
+
+    // 撤销
+    processUndo () {
+      this.modeler.get("commandStack").undo();
+    },
+
+    processRestart () { },
     // 任务节点配置人员
     addUser (properties) {
       this.updateProperties(
