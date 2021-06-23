@@ -47,7 +47,7 @@ export default {
 
     // 生成实例
     this.viewer = new BpmnModeler({
-    // this.viewer = new CustomModeler({
+      // this.viewer = new CustomModeler({
       paletteEntries,
       container: canvas,
       keyboard: {
@@ -266,9 +266,6 @@ export default {
       console.log(userTaskList)
     },
 
-
-
-
     saveBpmn () {
       this.saveViewer();
     },
@@ -301,7 +298,6 @@ export default {
     success () {
       // 添加绑定事件,
       this.viewer.on('commandStack.changed', () => {
-        console.log('commandStack.changed')
         this.saveDiagram((err, xml) => {
           console.log(err, xml);
         })

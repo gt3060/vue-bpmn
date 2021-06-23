@@ -7,7 +7,7 @@ import {
   remove as svgRemove,
 } from 'tiny-svg'
 
-const TASK_BORDER_RADIUS = 12
+let TASK_BORDER_RADIUS = 12
 
 export default {
   'create.start-event': createAction(
@@ -18,14 +18,14 @@ export default {
     '',
     drawShape // 📌
   ),
-  'create.task': createAction(
-    'bpmn:Task',
-    'activity',
-    'bpmn-icon-task-custom', // 🙋‍♂️ 使用图片后，记得修改成自己的类名
-    'Create Task',
-    require('../img/task.png'),
-    drawShape // 📌
-  ),
+  // 'create.task': createAction(
+  //   'bpmn:Task',
+  //   'activity',
+  //   'bpmn-icon-task-custom', // 🙋‍♂️ 使用图片后，记得修改成自己的类名
+  //   'Create Task',
+  //   require('../img/task.png'),
+  //   drawShape // 📌
+  // ),
   'create.gttest': createAction(
     'bpmn:Task',
     'event',
@@ -159,7 +159,8 @@ export default {
     'bpmn-icon-start-event-none', // 🙋‍♂️ 使用图片后，记得修改成自己的类名
     '并发',
     '',
-    drawShape
+    drawShape,
+    '6'
   ),
   'create.init-task': createAction(
     'bpmn:signalEventDefinition',
@@ -213,7 +214,6 @@ function createAction(
       })
     }
 
-    console.log('**********shape,elementFactory*************', shape)
     create.start(event, shape)
   }
 
@@ -243,6 +243,7 @@ function createAction(
   return config
 }
 
+// svg图形构造
 function drawShape(parentNode, element, bpmnRenderer) {
   let shape
   let customShapeArr = ['bpmn:IntermediateThrowEvent']
@@ -251,32 +252,39 @@ function drawShape(parentNode, element, bpmnRenderer) {
   } else {
     shape = null
   }
-  let color = ''
+  // let color = ''
   console.log('+bpmnbpmn:Data++++', bpmnRenderer, shape, element)
   if (is(element, 'bpmn:Task')) {
-    let name = element.businessObject.name
+    let name =
+      element.businessObject.name && element.businessObject.name.split('：')[0]
     const height = 80
     const width = 100
     element.width = width
     element.height = height
-    let rect = drawRect(parentNode, width, height, TASK_BORDER_RADIUS, color)
     if (name) {
+      let inColor = ''
       if (name === '获取物料') {
-        color = 'blue'
-        let rect1 = drawRect(parentNode, 12, 12, TASK_BORDER_RADIUS, color)
+        inColor = 'blue'
+        let rect1 = drawCircle(parentNode, 12, 12, inColor)
         svgAttr(rect1, {
           transform: 'translate(75, 10)',
         })
+        prependTo(rect1, parentNode)
+        TASK_BORDER_RADIUS = 12
       } else if (name === '输入物料') {
-        color = 'red'
-        let rect1 = drawRect(parentNode, 12, 12, TASK_BORDER_RADIUS, color)
+        inColor = 'red'
+        let rect1 = drawCircle(parentNode, 12, 12, inColor)
         svgAttr(rect1, {
           transform: 'translate(75, 10)',
         })
+        prependTo(rect1, parentNode)
+        TASK_BORDER_RADIUS = 0
+      } else {
+        TASK_BORDER_RADIUS = 12
       }
-      prependTo(rect1, parentNode)
     }
 
+    let rect = drawRect(parentNode, width, height, TASK_BORDER_RADIUS)
     prependTo(rect, parentNode)
     svgRemove(shape)
     return shape

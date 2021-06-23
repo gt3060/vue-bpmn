@@ -27,16 +27,17 @@
         v-if="Task"
       >
         <el-input
+          type="textarea"
           v-model="form.value"
           @input="valueChange"
         ></el-input>
       </el-form-item>
-      <el-form-item label="节点颜色">
+      <!-- <el-form-item label="节点颜色">
         <el-color-picker
           v-model="form.color"
           @active-change="colorChange"
         ></el-color-picker>
-      </el-form-item>
+      </el-form-item> -->
       <template v-if="!sequenceFlow">
         <el-form-item label="节点长度">
           <el-input
@@ -199,6 +200,10 @@ export default {
         return;
       }
       return this.element.type === "bpmn:SequenceFlow";
+    },
+    conCurrent () {
+      if (!this.element) return;
+      return this.element.type === "bpmn:IntermediateThrowEvent";
     }
   },
   data () {
@@ -207,9 +212,9 @@ export default {
         id: "",
         name: "",
         color: "",
-        value: '',
-        width: '',
-        height: ''
+        value: "",
+        width: "",
+        height: ""
       },
       element: {},
       users: [
@@ -241,7 +246,7 @@ export default {
         }
       ],
       flag: false,
-      nameSplit: []
+      nameSplit: [],
     };
   },
   mounted () {
@@ -250,10 +255,10 @@ export default {
   watch: {
     element: {
       handler (newVal, oldVal) {
-        console.log("++++element监听", newVal, this.nameSplit, this.flag, !this.sequenceFlow, this.form);
+        console.log("++++element监听", newVal, this.nameSplit, !this.sequenceFlow, this.form);
+        if (!newVal) return;
         if (!this.form.name) {
-          console.log("+++++this.form**************")
-          if (this.flag && !this.sequenceFlow) {
+          if (!this.sequenceFlow) {
             let tempS = localStorage.getItem('infoType');
             localStorage.removeItem('infoType');
             let val = '';
@@ -268,16 +273,13 @@ export default {
                 val = '启动定时器';
                 break;
             }
-            let obj = {
-              type: 'task',
-              infoType: tempS
-            }
-            this.nameChange(val, obj);
+            this.nameChange(val);
             this.flag = false;
           }
         } else {
           if (this.nameSplit.length > 1) {
-            this.valueChange(this.nameSplit[1]);
+            let value = this.nameSplit[1];
+            this.valueChange(value);
           } else {
             let value = this.isEmpty(this.nameSplit[0])
             this.nameChange(value);
@@ -289,16 +291,15 @@ export default {
   },
   methods: {
     handleModeler () {
+      this.modeler.on('commandStack.shape.resize.canExecute', e => {
+        const { element } = e;
+        console.log("----API属性", e)
+      })
       // 监听节点选择变化
       this.modeler.on("selection.changed", e => {
         const element = e.newSelection[0];
         this.element = element;
         console.log('---selection.changed', element, this.form);
-        if (this.element) {
-          // console.log(this.element.id);
-        } else {
-          // console.log(this.element);
-        }
         if (!element) return;
         this.form = {
           ...element.businessObject,
@@ -310,25 +311,18 @@ export default {
           console.log('+++++element存在2', this.nameSplit, JSON.parse(JSON.stringify(this.form)));
           this.form.value = this.isEmpty(this.nameSplit[1]);
         }
-        if (this.form.userType === "candidateUsers") {
-          this.form["candidateUsers"] =
-            this.form["candidateUsers"].split(",") || [];
-        }
       });
       //  监听节点属性变化
       this.modeler.on("element.changed", e => {
         const { element } = e;
-        if (element.__proto__.constructor.name !== '  ') {
-          this.flag = true;
-        }
-        console.log('---element.changed', element, this.form, element.__proto__.constructor.name)
+        console.log('---element.changed', element, this.form)
         if (!element) return;
         //  新增节点需要更新回属性面板
         if (element.id === this.form.id && element.businessObject.name) {
           this.nameSplit = element.businessObject.name.split('：');
           this.form.name = this.isEmpty(this.nameSplit[0]);
           this.form.value = this.isEmpty(this.nameSplit[1]);
-          // this.form = { ...this.form };
+          this.form = { ...this.form };
         }
       });
     },
@@ -338,25 +332,21 @@ export default {
       return ''
     },
     // 属性面板名称，更新回流程节点
-    nameChange (name, obj = {}) {
+    nameChange (name) {
       const modeling = this.modeler.get("modeling");
       if (this.element) {
+        // this.updateProperties(name)
         modeling.updateLabel(this.element, name);
       }
-      
     },
     valueChange (value) {
-      // this.form.value = value;
       const modeling = this.modeler.get("modeling");
-      console.log("----modeling*************", modeling);
-      // let isShowName = ['']
-      // if (this.sequenceFlow) {
-      //   // let name = this.form.name;
-      //   if (this.element) {
-      //     modeling.updateLabel(this.element, `${value}`);
-      //   }
-      //   return;
-      // }
+      let shapType = this.element ? this.element.__proto__.constructor.name : '';
+      let labelArr = ['Label', 'Connection'];
+      if (labelArr.includes(shapType)) {
+        modeling.updateLabel(this.element, this.form.name);
+        return;
+      }
       let name = this.form.name;
       if (this.element) {
         if (this.form.name) {
@@ -367,17 +357,14 @@ export default {
       }
     },
     // 属性面板颜色，更新回流程节点
-    colorChange (color) {
-      console.log("---color", color)
-      if (color && this.element) {
-        const modeling = this.modeler.get("modeling");
-        console.log(color, '---改变颜色', this.element, modeling)
-        modeling.setColor(this.element, {
-          stroke: color,
-        });
-        // modeling.updateProperties(this.element, { color: color });
-      }
-    },
+    // colorChange (color) {
+    //   if (color && this.element) {
+    //     const modeling = this.modeler.get("modeling");
+    //     modeling.setColor(this.element, {
+    //       stroke: color,
+    //     });
+    //   }
+    // },
     // 属性节点宽度
     widthChange () {
       if (this.element) {
@@ -395,7 +382,6 @@ export default {
       const Selection = this.modeler.get("selection");
       const SelectedElements = Selection.get();
       const AlignElements = this.modeler.get("alignElements");
-      console.log('----SelectedElemtns', SelectedElements)
       if (!SelectedElements || SelectedElements.length <= 1) {
         this.$message.warning("请按住 Ctrl/Shift 键选择多个元素对齐");
         return;
