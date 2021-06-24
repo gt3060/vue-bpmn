@@ -11,11 +11,12 @@ const HIGH_PRIORITY = 1500
 // const TASK_BORDER_RADIUS = 2
 
 export default class CustomRenderer extends BaseRenderer {
-  constructor(eventBus, bpmnRenderer, paletteEntries) {
+  constructor(eventBus, bpmnRenderer, paletteEntries, customToolEntries) {
     super(eventBus, HIGH_PRIORITY)
 
     this.bpmnRenderer = bpmnRenderer
     this.paletteEntries = paletteEntries
+    this.customToolEntries = customToolEntries
   }
 
   canRender(element) {
@@ -39,7 +40,8 @@ export default class CustomRenderer extends BaseRenderer {
       shape,
       paletteEntries,
       element,
-      this.bpmnRenderer
+      this.bpmnRenderer,
+      this.customToolEntries
     )
     if (shape && shape.drawShape instanceof Function) {
       return shape.drawShape(parentNode, element, this.bpmnRenderer)
@@ -57,4 +59,9 @@ export default class CustomRenderer extends BaseRenderer {
   // }
 }
 
-CustomRenderer.$inject = ['eventBus', 'bpmnRenderer', 'config.paletteEntries']
+CustomRenderer.$inject = [
+  'eventBus',
+  'bpmnRenderer',
+  'config.paletteEntries',
+  // 'bpmnTools.customTools',
+]

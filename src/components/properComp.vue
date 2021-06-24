@@ -42,7 +42,7 @@
         <el-form-item label="节点长度">
           <el-input
             v-model="form.width"
-            @input="widthChange"
+            @change="widthChange"
           ></el-input>
         </el-form-item>
         <el-form-item label="节点宽度">
@@ -311,6 +311,7 @@ export default {
           console.log('+++++element存在2', this.nameSplit, JSON.parse(JSON.stringify(this.form)));
           this.form.value = this.isEmpty(this.nameSplit[1]);
         }
+        // this.updateElement(element);
       });
       //  监听节点属性变化
       this.modeler.on("element.changed", e => {
@@ -333,18 +334,18 @@ export default {
     },
     // 属性面板名称，更新回流程节点
     nameChange (name) {
-      const modeling = this.modeler.get("modeling");
-      if (this.element) {
-        // this.updateProperties(name)
-        modeling.updateLabel(this.element, name);
-      }
+      this.element && this.updateProperties({ name });
+      // const modeling = this.modeler.get("modeling");
+      // if (this.element) {
+      // modeling.updateLabel(this.element, name);
+      // }
     },
     valueChange (value) {
       const modeling = this.modeler.get("modeling");
       let shapType = this.element ? this.element.__proto__.constructor.name : '';
       let labelArr = ['Label', 'Connection'];
       if (labelArr.includes(shapType)) {
-        modeling.updateLabel(this.element, this.form.name);
+        this.updateProperties({ name: this.form.name });
         return;
       }
       let name = this.form.name;
@@ -357,18 +358,29 @@ export default {
       }
     },
     // 属性面板颜色，更新回流程节点
-    // colorChange (color) {
-    //   if (color && this.element) {
-    //     const modeling = this.modeler.get("modeling");
-    //     modeling.setColor(this.element, {
-    //       stroke: color,
-    //     });
-    //   }
-    // },
+    colorChange (color) {
+      if (color && this.element) {
+        const modeling = this.modeler.get("modeling");
+        modeling.setColor(this.element, {
+          stroke: color,
+        });
+      }
+    },
     // 属性节点宽度
-    widthChange () {
+    widthChange (value) {
       if (this.element) {
-
+        console.log('+++++this.element', this.element, value);
+        let { x, y, width, height } = this.element;
+        // this.element.width = value;
+        // this.updateProperties({ width: value });
+        const modeling = this.modeler.get('modeling');
+        let newBounds = {
+          x,
+          y,
+          height,
+          width: value
+        }
+        modeling.resizeShape(this.element, newBounds)
       }
     },
     // 属性节点高度

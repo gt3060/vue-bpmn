@@ -15,16 +15,18 @@
 </template>
 
 <script>
-import BpmnModeler from 'bpmn-js/lib/Modeler' // 引入 bpmn-js
-import paletteEntries from './config/paletteEntries'
-import customRenderer from './renderer'
-import customPalette from './palette'
-import customContextPad from './contextPad'
+import BpmnModeler from 'bpmn-js/lib/Modeler'; // 引入 bpmn-js
+import paletteEntries from './config/paletteEntries';
+import customRenderer from './renderer';
+import customPalette from './palette';
+import customContextPad from './contextPad';
 import propertiesProviderModule from 'bpmn-js-properties-panel/lib/provider/camunda';
-import propertiesPanelModule from 'bpmn-js-properties-panel'
+import propertiesPanelModule from 'bpmn-js-properties-panel';
 import camundaModdleDescriptor from 'camunda-bpmn-moddle/resources/camunda';
-import properComp from './properComp'
-import CustomModeler from './customModeler'
+import properComp from './properComp';
+import CustomModeler from './customModeler';
+import paletteProvider from './bpmnTools';
+import CustomDescriptor from './config/CustomDescriptor.json'
 
 export default {
   name: 'bpmn',
@@ -41,8 +43,8 @@ export default {
     // // // 去除默认工具栏  -- 如果不去除默认工具栏，渲染会出现两个工具栏重叠
     // const modules = BpmnModeler.prototype._modules
     // const index = modules.findIndex(it => it.paletteProvider);
-    // modules.splice(index, 1, customPalette);
-    console.log('modules', BpmnModeler.prototype._modules)
+    // modules.splice(index, 1);
+    // console.log('modules', BpmnModeler.prototype._modules, index)
     let contextPadProvider = ['value', ''];
 
     // 生成实例
@@ -62,13 +64,15 @@ export default {
         customContextPad,
         customRenderer,
         customPalette,
-        contextPadProvider
+        contextPadProvider,
+        paletteProvider
       ],
       // additionalModules: [{
       //   // contextPadProvider: ['value', ''],
       // }],
       moddleExtensions: {
-        camunda: camundaModdleDescriptor
+        camunda: camundaModdleDescriptor,
+        self: CustomDescriptor
       }
     })
     console.log('this.viewer.additionalModules', this.viewer.additionalModules)
@@ -217,6 +221,7 @@ export default {
     </bpmn:intermediateThrowEvent>
     <bpmn:sequenceFlow id="Flow_13cur33" sourceRef="Activity_1cojvvu" targetRef="Event_0tnw83s" />
     <bpmn:sequenceFlow id="Flow_1482bqh" sourceRef="Activity_1vzyu40" targetRef="Event_0tnw83s" />
+    <bpmn:parallelGateway id="Gateway_0yokimf" name="" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_0coajcg">
@@ -236,6 +241,9 @@ export default {
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0tnw83s_di" bpmnElement="Event_0tnw83s">
         <dc:Bounds x="155" y="275" width="330" height="30" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_18598hi_di" bpmnElement="Gateway_0yokimf">
+        <dc:Bounds x="295" y="415" width="50" height="50" />
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
@@ -365,6 +373,12 @@ export default {
   .canvas {
     width: 100%;
     height: 100%;
+    /deep/ .djs-palette {
+      width: 143px;
+    }
+    /deep/ .bjs-powered-by {
+      display: none;
+    }
   }
   .bjs-powered-by {
     display: none;
