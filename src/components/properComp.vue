@@ -171,6 +171,14 @@
         </el-select>
       </el-form-item>
     </el-form>
+    <div @contextmenu.prevent="handleRight">单击右键</div>
+    <ul
+      v-show="visible"
+      :style="{left:left+'px',top:top+'px'}"
+      class="contextmenu"
+    >
+      <li>历史记录</li>
+    </ul>
   </div>
 </template>
 
@@ -247,6 +255,9 @@ export default {
       ],
       flag: false,
       nameSplit: [],
+      visible: false, // 右键弹窗展示、隐藏
+      left: 0, // 右键弹窗展示、隐藏
+      top: 0, // 右键弹窗展示、隐藏
     };
   },
   mounted () {
@@ -288,8 +299,38 @@ export default {
       },
       deep: true
     },
+    visible (value) {
+      if (value) {
+        document.body.addEventListener('click', this.closeMenu)
+      } else {
+        document.body.removeEventListener('click', this.closeMenu)
+      }
+    }
   },
   methods: {
+    // 鼠标右键打开列表
+    handleRight (e) {
+      let event = event || window.event;
+      const menuMinWidth = 105
+      const offsetLeft = this.$el.getBoundingClientRect().left // container margin left
+      const offsetWidth = this.$el.offsetWidth // container width
+      const maxLeft = offsetWidth - menuMinWidth // left boundary
+      console.log(maxLeft, offsetLeft, offsetWidth, event)
+      const left = event.clientX - offsetLeft // 15: margin right
+
+      if (left > maxLeft) {
+        this.left = maxLeft
+      } else {
+        this.left = left
+      }
+
+      this.top = event.clientY - 60 // fix 位置bug
+      this.visible = true
+    },
+    // 鼠标右键关闭列表
+    closeMenu () {
+      this.visible = false
+    },
     handleModeler () {
       this.modeler.on('commandStack.shape.resize.canExecute', e => {
         const { element } = e;

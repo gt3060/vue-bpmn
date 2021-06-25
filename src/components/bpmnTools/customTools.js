@@ -34,7 +34,6 @@ PaletteProvider.$inject = [
   'handTool',
   'globalConnect',
   'translate',
-  // 'bpmnTools.customTools'
 ]
 
 PaletteProvider.prototype.getPaletteEntries = function (element) {
@@ -47,9 +46,8 @@ PaletteProvider.prototype.getPaletteEntries = function (element) {
     globalConnect = this._globalConnect,
     translate = this._translate
 
-  function createAction(type, group, className, title, drawShape) {
+  function createAction(type, group, className, title, imageUrl = '') {
     function createListener(event) {
-      console.log('++++++++++++++')
       // var shape = elementFactory.createShape(assign({ type: type }, options))
       var shape = elementFactory.createShape({ type: type })
 
@@ -70,9 +68,9 @@ PaletteProvider.prototype.getPaletteEntries = function (element) {
         click: createListener,
       },
     }
-    if (drawShape) {
+    if (imageUrl) {
       assign(config, {
-        drawShape,
+        imageUrl,
       })
     }
     return config
@@ -102,19 +100,6 @@ PaletteProvider.prototype.getPaletteEntries = function (element) {
 
   function createParticipant(event) {
     create.start(event, elementFactory.createParticipantShape())
-  }
-
-  // svg图形构造
-  function drawShape(parentNode, element, bpmnRenderer) {
-    let shape
-    // let color = ''
-    console.log('+bpmnbpmn:Data22222222++++', bpmnRenderer, shape, element)
-    if (is(element, 'bpmn:IntermediateThrowEvent')) {
-      shape = drawLine(parentNode, 10, 300, 'black')
-      shape = drawLine(parentNode, 20, 300, 'black')
-      return shape
-    }
-    return shape
   }
 
   assign(actions, {
@@ -171,17 +156,16 @@ PaletteProvider.prototype.getPaletteEntries = function (element) {
       //开始事件
       'bpmn:StartEvent',
       'event',
-      'bpmn-icon-start-event-none',
+      'bpmn-icon-task-top',
       translate('Create StartEvent'),
-      drawShape
+      require('../img/task.png'),
     ),
     'create.end-event': createAction(
       //结束事件
       'bpmn:EndEvent',
       'event',
       'bpmn-icon-end-event-none',
-      translate('Create EndEvent'),
-      drawShape
+      translate('Create EndEvent')
     ),
     'create.exclusive-gateway': createAction(
       //互斥网关

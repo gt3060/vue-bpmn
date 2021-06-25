@@ -43,8 +43,11 @@ export default class CustomRenderer extends BaseRenderer {
       this.bpmnRenderer,
       this.customToolEntries
     )
+    let optimazationArr = ['bpmn:StartEvent', 'bpmn:EndEvent']
     if (shape && shape.drawShape instanceof Function) {
       return shape.drawShape(parentNode, element, this.bpmnRenderer)
+    } else if (optimazationArr.includes(element.type)) {
+      return drawOptimazationShape(parentNode, element, this.bpmnRenderer)
     }
     console.log('---基础渲染')
     return this.bpmnRenderer.drawShape(parentNode, element)
@@ -57,6 +60,19 @@ export default class CustomRenderer extends BaseRenderer {
 
   //   return this.bpmnRenderer.getShapePath(shape)
   // }
+}
+// 优化svg图形构造
+function drawOptimazationShape(parentNode, element, bpmnRenderer) {
+  let type = element.type
+  let shape 
+  // let color = ''
+  console.log('+bpmnbpmn:Data22222222++++', bpmnRenderer, shape, element)
+  // if (type !== 'bpmn:StartEvent') {
+  //   shape = drawLine(parentNode, 10, 300, 'black')
+  //   shape = drawLine(parentNode, 20, 300, 'black')
+  //   return shape
+  // }
+  return shape
 }
 
 CustomRenderer.$inject = [

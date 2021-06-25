@@ -7,3 +7,6 @@
 .icon-custom-delete {
   background-image: url('https://hexo-blog-1256114407.cos.ap-shenzhen-fsi.myqcloud.com/delete.png');
 }
+.bpmn-icon-task-top{
+  margin-top: 7px;
+}
