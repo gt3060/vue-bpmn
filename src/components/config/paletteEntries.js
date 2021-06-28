@@ -6,7 +6,7 @@ import {
   create as svgCreate,
   remove as svgRemove,
 } from 'tiny-svg'
-import { drawLine, drawCircle, drawRect } from '../utils'
+import { drawLine, drawCircle, drawRect, drawDiamond, drawPath } from '../utils'
 
 let TASK_BORDER_RADIUS = 12
 function createAction(
@@ -39,6 +39,15 @@ function createAction(
         width = 330
         height = 30
       }
+      shape = elementFactory.createShape({
+        type,
+        width,
+        height,
+      })
+    } else if (infoType === '5') {
+      let width, height
+      width = 120
+      height = 100
       shape = elementFactory.createShape({
         type,
         width,
@@ -82,20 +91,26 @@ function createAction(
 function drawShape(parentNode, element, bpmnRenderer) {
   let shape
   let customShapeArr = ['bpmn:IntermediateThrowEvent']
+  let customTaskArr = ['循环']
+  let name =
+    element.businessObject.name && element.businessObject.name.split('：')[0]
+  // && !customTaskArr.includes(name)
   if (!customShapeArr.includes(element.type)) {
     shape = bpmnRenderer.drawShape(parentNode, element)
   } else {
     shape = null
   }
+  console.log('++++++++++++++++++++++++++shape', shape)
   // let color = ''
   console.log('+bpmnbpmn:Data++++', bpmnRenderer, shape, element)
+  // if (is(element, 'bpmn:Task') && name === '循环') {
+  //   shape = drawLine(parentNode, 10, 300, 'black')
+  //   shape = drawLine(parentNode, 20, 300, 'black')
+  //   return shape
+  // }
   if (is(element, 'bpmn:Task')) {
-    let name =
-      element.businessObject.name && element.businessObject.name.split('：')[0]
     let height = 80
     let width = 100
-    element.width = width
-    element.height = height
     if (name) {
       let inColor = ''
       if (name === '获取物料') {
@@ -106,6 +121,12 @@ function drawShape(parentNode, element, bpmnRenderer) {
         })
         prependTo(rect1, parentNode)
         TASK_BORDER_RADIUS = 12
+        let rect = drawRect(parentNode, width, height, TASK_BORDER_RADIUS)
+        prependTo(rect, parentNode)
+        svgRemove(shape)
+        element.width = width
+        element.height = height
+        return shape
       } else if (name === '输入物料') {
         inColor = 'red'
         let rect1 = drawCircle(parentNode, 12, 12, inColor)
@@ -114,21 +135,60 @@ function drawShape(parentNode, element, bpmnRenderer) {
         })
         prependTo(rect1, parentNode)
         TASK_BORDER_RADIUS = 0
+        let rect = drawRect(parentNode, width, height, TASK_BORDER_RADIUS)
+        prependTo(rect, parentNode)
+        svgRemove(shape)
+        element.width = width
+        element.height = height
+        return shape
+      } else if (name === '循环') {
+        svgAttr(shape, {
+          stroke: 'white',
+        })
+        // let d = `M20 0 L${
+        //   width - 20
+        // } 0 L${width} 20 L${width} ${height} L0 ${height} L0 20 Z`
+        let d = `M100 80 L0 80 L0 0 L100 0 L100 60 L110 52 L100 60 L90 52 L100 61`
+        let rect = drawPath(parentNode, d)
+        element.width = width
+        element.height = height
+        return rect
+      } else if (name === '判断') {
+        svgAttr(shape, {
+          stroke: 'white',
+        })
+        let rect = drawDiamond(parentNode, width, height)
+        element.width = width
+        element.height = height
+        return rect
+      } else if (name === '等待') {
+        svgAttr(shape, {
+          stroke: 'white',
+        })
+        let d = `M40 6 A1 1 0 0 1 65 73`
+        let rect = drawPath(parentNode, d, 'rgb(140, 197, 255)')
+        let s = `M33 8 A1 1 0 0 0 60 75`
+        rect = drawPath(parentNode, s, '#409eff')
+        element.width = width
+        element.height = height
+        return rect
       } else {
         TASK_BORDER_RADIUS = 12
+        let rect = drawRect(parentNode, width, height, TASK_BORDER_RADIUS)
+        prependTo(rect, parentNode)
+        svgRemove(shape)
+        element.width = width
+        element.height = height
+        return shape
       }
     }
-
-    let rect = drawRect(parentNode, width, height, TASK_BORDER_RADIUS)
-    prependTo(rect, parentNode)
-    svgRemove(shape)
-    return shape
   }
   if (is(element, 'bpmn:IntermediateThrowEvent')) {
     shape = drawLine(parentNode, 10, 300, 'black')
     shape = drawLine(parentNode, 20, 300, 'black')
     return shape
   }
+  console.log('---最终渲染shape', shape)
   return shape
 }
 
@@ -146,7 +206,7 @@ let exportPalette = {
     'bpmn:Task',
     'activity',
     '', // 🙋‍♂️ 使用图片后，记得修改成自己的类名
-    '任务',
+    '获取物料',
     require('../img/task.png'),
     drawShape, // 📌
     '2'
@@ -155,7 +215,7 @@ let exportPalette = {
     'bpmn:Task',
     'activity',
     'bpmn-icon-task-custom-bing', // 🙋‍♂️ 使用图片后，记得修改成自己的类名
-    '任务2',
+    '输入物料',
     require('../img/task.png'),
     drawShape, // 📌x
     '3'
@@ -173,28 +233,28 @@ let exportPalette = {
     'bpmn:Task',
     'activity',
     'bpmn-icon-task-custom-bing', // 🙋‍♂️ 使用图片后，记得修改成自己的类名
-    '启动定时器',
+    '循环',
     require('../img/task.png'),
     drawShape, // 📌
-    '4'
+    '5'
   ),
   'create.gttes4': createAction(
     'bpmn:Task',
     'activity',
     'bpmn-icon-task-custom-bing', // 🙋‍♂️ 使用图片后，记得修改成自己的类名
-    '启动定时器',
+    '判断',
     require('../img/task.png'),
     drawShape, // 📌
-    '4'
+    '6'
   ),
   'create.gttes23': createAction(
     'bpmn:Task',
     'activity',
     'bpmn-icon-task-custom-bing', // 🙋‍♂️ 使用图片后，记得修改成自己的类名
-    '启动定时器',
+    '等待',
     require('../img/task.png'),
     drawShape, // 📌
-    '4'
+    '7'
   ),
   'create.gttes2': createAction(
     'bpmn:Task',

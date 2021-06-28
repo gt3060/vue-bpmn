@@ -283,6 +283,15 @@ export default {
               case '4':
                 val = '启动定时器';
                 break;
+              case '5':
+                val = '循环';
+                break;
+              case '6':
+                val = "判断";
+                break;
+              case '7':
+                val = "等待";
+                break;
             }
             this.nameChange(val);
             this.flag = false;
@@ -332,10 +341,11 @@ export default {
       this.visible = false
     },
     handleModeler () {
-      this.modeler.on('commandStack.shape.resize.canExecute', e => {
-        const { element } = e;
-        console.log("----API属性", e)
-      })
+      // let canvas = this.modeler.get('canvas');
+      // canvas.resized(e => {
+      //   const { element } = e;
+      //   console.log("----API属性", e)
+      // })
       // 监听节点选择变化
       this.modeler.on("selection.changed", e => {
         const element = e.newSelection[0];

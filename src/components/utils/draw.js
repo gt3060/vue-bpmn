@@ -56,4 +56,57 @@ function drawRect(parentNode, width, height, borderRadius, strokeColor) {
   return rect
 }
 
-export { drawLine, drawCircle, drawRect }
+// 自定义画菱形
+function drawDiamond(parentNode, width, height, attrs) {
+  var x_2 = width / 2
+  var y_2 = height / 2
+
+  var points = [
+    { x: x_2, y: 0 },
+    { x: width, y: y_2 },
+    { x: x_2, y: height },
+    { x: 0, y: y_2 },
+  ]
+
+  var pointsString = points
+    .map(function (point) {
+      return point.x + ',' + point.y
+    })
+    .join(' ')
+
+  var polygon = svgCreate('polygon')
+
+  svgAttr(polygon, {
+    points: pointsString,
+    stroke: 'black',
+    strokeWidth: 2,
+    fill: 'none',
+  })
+
+  svgAppend(parentNode, polygon)
+
+  return polygon
+}
+
+// 自定义画路径
+function drawPath(parentNode, d, attrs) {
+  var path = svgCreate('path')
+  svgAttr(path, {
+    d: d,
+    stroke: attrs ? attrs : 'black',
+    strokeWidth: 2,
+    fill: 'none',
+  })
+
+  svgAppend(parentNode, path)
+
+  return path
+}
+
+// 自定义循环
+function drawLoop(parentNode, path) {
+  svgAppend(parentNode, path)
+  return path
+}
+
+export { drawLine, drawCircle, drawRect, drawDiamond, drawPath, drawLoop }

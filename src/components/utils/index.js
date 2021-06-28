@@ -1,1 +1,1 @@
-export { drawLine, drawCircle, drawRect } from './draw'
+export { drawLine, drawCircle, drawRect, drawDiamond, drawPath, drawLoop } from './draw'

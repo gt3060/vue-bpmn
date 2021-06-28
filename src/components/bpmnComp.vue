@@ -310,31 +310,40 @@ export default {
           console.log(err, xml);
         })
       })
+      // const modeling = this.modeler.get('modeling');
 
       // 判断拖拽是点击还是拖拽
-      // const eventBus = this.viewer.get('eventBus')
-      // // 注册节点事件，eventTypes中可以写多个事件
-      // const eventTypes = ['element.click', 'element.hover']
-      // eventTypes.forEach((eventType) => {
-      //   eventBus.on(eventType, (e) => {
-      //     const { element } = e
-      //     if (!element.parent) return
-      //     if (!e || element.type === 'bpmn:Process') {
-      //       return false
-      //     } else {
-      //       if (eventType === 'element.click') {
-      //         // 节点点击后想要做的处理
-      //         // 此时想要点击节点后，拿到节点实例，通过外部输入更新节点名称
-      //         this.currentElement = element
-      //         // console.log(element);
-      //         // console.log('this.viewer', this.viewer.get('elementRegistry'));
-      //       } else if (eventType === 'element.hover') {
-      //         // 鼠标滑过节点后想要做的处理
-      //         console.log('鼠标经过节点啦~')
-      //       }
-      //     }
-      //   })
-      // })
+      const eventBus = this.viewer.get('eventBus')
+      // 注册节点事件，eventTypes中可以写多个事件
+      const eventTypes = ['element.click', 'element.hover', 'shape.added']
+      eventTypes.forEach((eventType) => {
+        eventBus.on(eventType, (e) => {
+          const { element } = e
+          if (!element.parent) return
+          if (!e || element.type === 'bpmn:Process') {
+            return false
+          } else {
+            if (eventType === 'element.click') {
+              // 节点点击后想要做的处理
+              // 此时想要点击节点后，拿到节点实例，通过外部输入更新节点名称
+              this.currentElement = element
+              // console.log(element);
+              // console.log('this.viewer', this.viewer.get('elementRegistry'));
+            } else if (eventType === 'element.hover') {
+              // 鼠标滑过节点后想要做的处理
+              console.log('鼠标经过节点啦~')
+            } else if (eventType === 'shape.added') {
+              console.log("_______________________新增一个shape节点", element);
+              // if(element.type === '')
+              // let properties = {
+              //   newProps: '新增自定义属性', // 新增属性，在xml文件以新属性展示
+              //   // this.element.businessObject.$attr.newProps
+              // }
+              // modeling.updateProperties(this.element, properties)
+            }
+          }
+        })
+      })
     },
     saveDiagram (done) {
       // 把传入的done再传给bpmn原型的saveXML函数调用

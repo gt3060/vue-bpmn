@@ -1,7 +1,19 @@
 <template>
-  <div style="display: flex;">
-    <div style="width: 20%">
-      <el-button @click="saveBpmn">保存</el-button>
+  <div>
+    <div class="bpmnTopStyle">
+      <customButton
+        label="return"
+        :icon='img'
+        type="return"
+      ></customButton>
+      <el-button
+        @click="saveBpmn"
+        type="text"
+      >保存</el-button>
+      <el-button
+        @click="saveBpmn"
+        type="text"
+      >保存</el-button>
       <el-upload
         style="margin-top: 20px"
         class="upload-demo"
@@ -12,16 +24,11 @@
         multiple
         :limit="3"
         :on-exceed="handleExceed"
-        :file-list="fileList"
       >
         <el-button
           size="small"
           type="primary"
         >点击上传</el-button>
-        <div
-          slot="tip"
-          class="el-upload__tip"
-        >只能上传jpg/png文件，且不超过500kb</div>
       </el-upload>
     </div>
     <bpmnComp ref="bpmnRef"></bpmnComp>
@@ -30,6 +37,8 @@
 
 <script>
 import bpmnComp from '../components/bpmnComp'
+import customButton from '../components/components/button.vue'
+import img from '../components/img/return.png'
 export default {
   data () {
     return {
@@ -42,7 +51,8 @@ export default {
           name: 'food2.jpeg',
           url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
         }
-      ]
+      ],
+      img
     }
   },
   methods: {
@@ -63,10 +73,18 @@ export default {
     }
   },
   components: {
-    bpmnComp
+    bpmnComp,
+    customButton
   }
 }
 </script>
 
-<style>
+<style scoped lang="less">
+.bpmnTopStyle {
+  height: 50px;
+  display: flex;
+  padding: 10px;
+  background-color: #323232;
+  color: white;
+}
 </style>
