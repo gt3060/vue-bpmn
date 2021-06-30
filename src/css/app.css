@@ -13,16 +13,24 @@
 .titleNameStyle{
   /* border:1px solid black */
   text-align: left;
-  padding: 15px 0px 3px 15px;
+  padding: 7px 0px 3px 15px;
+  color: '#cb'
+}
+.titleNameStyle:first-child{
+  padding-top: 15px
 }
 .entry{
   /* border:1px solid black; */
   margin-top: 7px;
   margin-left: 7px;
+  margin-right: 10px;
 }
 .entry:after{
   display: block;
 }
 .entryFont{
   font-size: 10px;
+  line-height: 16px;
+  width: 50px;
+  margin-top: -5px;
 }

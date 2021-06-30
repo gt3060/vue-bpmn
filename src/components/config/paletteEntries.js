@@ -6,7 +6,15 @@ import {
   create as svgCreate,
   remove as svgRemove,
 } from 'tiny-svg'
-import { drawLine, drawCircle, drawRect, drawDiamond, drawPath } from '../utils'
+import {
+  drawLine,
+  drawCircle,
+  drawRect,
+  drawDiamond,
+  drawPath,
+  drawHorizonLine,
+  drawEllipse,
+} from '../utils'
 
 let TASK_BORDER_RADIUS = 12
 function createAction(
@@ -30,7 +38,7 @@ function createAction(
       type,
       infoType
     )
-    localStorage.setItem('infoType', infoType)
+    localStorage.setItem('infoType', title)
     let isCustomShape = ['bpmn:IntermediateThrowEvent']
     var shape
     if (isCustomShape.includes(type)) {
@@ -91,31 +99,35 @@ function createAction(
 function drawShape(parentNode, element, bpmnRenderer) {
   let shape
   let customShapeArr = ['bpmn:IntermediateThrowEvent']
-  let customTaskArr = ['循环']
   let name =
     element.businessObject.name && element.businessObject.name.split('：')[0]
-  // && !customTaskArr.includes(name)
   if (!customShapeArr.includes(element.type)) {
     shape = bpmnRenderer.drawShape(parentNode, element)
   } else {
     shape = null
   }
-  console.log('++++++++++++++++++++++++++shape', shape)
-  // let color = ''
   console.log('+bpmnbpmn:Data++++', bpmnRenderer, shape, element)
-  // if (is(element, 'bpmn:Task') && name === '循环') {
-  //   shape = drawLine(parentNode, 10, 300, 'black')
-  //   shape = drawLine(parentNode, 20, 300, 'black')
-  //   return shape
-  // }
   if (is(element, 'bpmn:Task')) {
     let height = 80
     let width = 100
+    // 过程组件
+    let processComp = ['物料输入', '输入物料', '物料变更', '数据计算']
+    // 输入/输出组件
+    let inOutputComp = [
+      '物料输出',
+      '输入输出',
+      '获取物料',
+      '物料释放',
+      '数据输入',
+      '数据输出',
+    ]
+    // 预处理组件
+    let pretreatmentComp = ['新建变量']
     if (name) {
       let inColor = ''
-      if (name === '获取物料') {
+      if (name === '获取物料1') {
         inColor = 'blue'
-        let rect1 = drawCircle(parentNode, 12, 12, inColor)
+        let rect1 = drawEllipse(parentNode, 12, 12, inColor)
         svgAttr(rect1, {
           transform: `translate(${element.width - 25}, 10)`,
         })
@@ -127,9 +139,9 @@ function drawShape(parentNode, element, bpmnRenderer) {
         element.width = width
         element.height = height
         return shape
-      } else if (name === '输入物料') {
+      } else if (processComp.includes(name)) {
         inColor = 'red'
-        let rect1 = drawCircle(parentNode, 12, 12, inColor)
+        let rect1 = drawEllipse(parentNode, 12, 12, inColor)
         svgAttr(rect1, {
           transform: `translate(${element.width - 25}, 10)`,
         })
@@ -145,9 +157,6 @@ function drawShape(parentNode, element, bpmnRenderer) {
         svgAttr(shape, {
           stroke: 'white',
         })
-        // let d = `M20 0 L${
-        //   width - 20
-        // } 0 L${width} 20 L${width} ${height} L0 ${height} L0 20 Z`
         let d = `M100 80 L0 80 L0 0 L100 0 L100 60 L110 52 L100 60 L90 52 L100 61`
         let rect = drawPath(parentNode, d)
         element.width = width
@@ -162,13 +171,48 @@ function drawShape(parentNode, element, bpmnRenderer) {
         element.height = height
         return rect
       } else if (name === '等待') {
+        height = 100
         svgAttr(shape, {
           stroke: 'white',
         })
-        let d = `M40 6 A1 1 0 0 1 65 73`
-        let rect = drawPath(parentNode, d, 'rgb(140, 197, 255)')
-        let s = `M33 8 A1 1 0 0 0 60 75`
-        rect = drawPath(parentNode, s, '#409eff')
+        let d = `M50 0 A50 50 0 1  1 0 50`
+        let rect = drawPath(parentNode, d, 'black')
+        let point = [Math.floor(width / 2), Math.floor(height / 2)]
+        let length = Math.floor(width / 2)
+        let attrs = {
+          strokeDasharray: '2 13',
+        }
+        rect = drawCircle(parentNode, point, length, attrs)
+        element.width = width
+        element.height = height
+        return rect
+      } else if (pretreatmentComp.includes(name)) {
+        TASK_BORDER_RADIUS = 0
+        width = 200
+        let rect = drawHorizonLine(parentNode, 10, 80, 'black')
+        rect = drawHorizonLine(parentNode, width - 10, 80, 'black')
+        rect = drawRect(parentNode, width, height, TASK_BORDER_RADIUS)
+        prependTo(rect, parentNode)
+        svgRemove(shape)
+        element.width = width
+        element.height = height
+        return shape
+      } else if (inOutputComp.includes(name)) {
+        width = 120
+        svgAttr(shape, {
+          stroke: 'white',
+        })
+        let d = `M0 0 L100 0 Q140 40, 100 80 L0 80 Q 40 40, 0 0`
+        let rect = drawPath(parentNode, d)
+        element.width = width
+        element.height = height
+        return rect
+      } else if (name === '人工输入') {
+        svgAttr(shape, {
+          stroke: 'white',
+        })
+        let d = `M0 20 L100 0 L100 80 L0 80 Z`
+        let rect = drawPath(parentNode, d)
         element.width = width
         element.height = height
         return rect
@@ -201,193 +245,174 @@ function prependTo(newNode, parentNode, siblingNode) {
   parentNode.insertBefore(newNode, siblingNode || parentNode.firstChild)
 }
 
+let actionZh = [
+  '循环',
+  '判断',
+  '等待',
+  '物料输入',
+  '物料输出',
+  '获取物料',
+  '物料释放',
+  '物料变更',
+  '新建变量',
+  '数据计算',
+  '数据输入',
+  '数据输出',
+  '输入输出',
+  '人工输入',
+]
+let actionArr = actionZh
+
 let exportPalette = {
-  'matrix-title': {
-    //工具分割线
-    group: 'activity',
-    titleName: 'Matrix components',
-  },
-  'create.gttest1': createAction(
-    'bpmn:Task',
-    'activity',
-    '', // 🙋‍♂️ 使用图片后，记得修改成自己的类名
-    '获取物料',
-    require('../img/task.png'),
-    drawShape, // 📌
-    '2'
-  ),
-  'create.gttest2': createAction(
-    'bpmn:Task',
-    'activity',
-    'bpmn-icon-task-custom-bing', // 🙋‍♂️ 使用图片后，记得修改成自己的类名
-    '输入物料',
-    require('../img/task.png'),
-    drawShape, // 📌x
-    '3'
-  ),
-  'create.gttest3': createAction(
-    'bpmn:Task',
-    'activity',
-    'bpmn-icon-task-custom-bing', // 🙋‍♂️ 使用图片后，记得修改成自己的类名
-    '启动定时器',
-    require('../img/task.png'),
-    drawShape, // 📌
-    '4'
+  'create.dengyu': createAction(
+    'bpmn:IntermediateThrowEvent',
+    'event',
+    'bpmn-customIcon-collect', // 🙋‍♂️ 使用图片后，记得修改成自己的类名
+    'collect',
+    require('../img/collectW2x.png'),
+    drawShape
   ),
   'create.gttes5': createAction(
     'bpmn:Task',
     'activity',
     'bpmn-icon-task-custom-bing', // 🙋‍♂️ 使用图片后，记得修改成自己的类名
-    '循环',
+    actionArr[0],
     require('../img/task.png'),
-    drawShape, // 📌
-    '5'
+    drawShape // 📌
   ),
   'create.gttes4': createAction(
     'bpmn:Task',
     'activity',
-    'bpmn-icon-task-custom-bing', // 🙋‍♂️ 使用图片后，记得修改成自己的类名
-    '判断',
-    require('../img/task.png'),
-    drawShape, // 📌
-    '6'
+    '', // 🙋‍♂️ 使用图片后，记得修改成自己的类名
+    actionArr[1],
+    require('../img/judgmentW2x.png'),
+    drawShape // 📌
   ),
-  'gatew2ay-separator': {
-    //网关分割线
-    group: 'activity',
-    separator: true,
-  },
-  'matrix2-title': {
-    //工具分割线
-    group: 'activity',
-    titleName: 'Ma22trix components',
-  },
-
   'create.gttes23': createAction(
     'bpmn:Task',
     'activity',
     'bpmn-icon-task-custom-bing', // 🙋‍♂️ 使用图片后，记得修改成自己的类名
-    '等待',
+    actionArr[2],
     require('../img/task.png'),
-    drawShape, // 📌
-    '7'
+    drawShape // 📌
   ),
-  'create.gttes2': createAction(
+  'material-separator': {
+    group: 'activity',
+    separator: true,
+  },
+  'material-title': {
+    group: 'activity',
+    titleName: 'Material management',
+  },
+  'create.enter': createAction(
     'bpmn:Task',
     'activity',
-    'bpmn-icon-task-custom-bing', // 🙋‍♂️ 使用图片后，记得修改成自己的类名
-    '启动定时器',
-    require('../img/task.png'),
+    '', // 🙋‍♂️ 使用图片后，记得修改成自己的类名
+    actionArr[3],
+    require('../img/materialEnterW2x.png'),
     drawShape, // 📌
-    '4'
+    'materialEnter'
   ),
+  'create.output': createAction(
+    'bpmn:Task',
+    'activity',
+    '', // 🙋‍♂️ 使用图片后，记得修改成自己的类名
+    actionArr[4],
+    require('../img/materialOutputW2x.png'),
+    drawShape // 📌
+  ),
+  'create.obtain': createAction(
+    'bpmn:Task',
+    'activity',
+    '', // 🙋‍♂️ 使用图片后，记得修改成自己的类名
+    actionArr[5],
+    require('../img/obtainW2x.png'),
+    drawShape // 📌
+  ),
+  'create.release': createAction(
+    'bpmn:Task',
+    'activity',
+    '', // 🙋‍♂️ 使用图片后，记得修改成自己的类名
+    actionArr[6],
+    require('../img/freedW2x.png'),
+    drawShape // 📌
+  ),
+  'create.change': createAction(
+    'bpmn:Task',
+    'activity',
+    '', // 🙋‍♂️ 使用图片后，记得修改成自己的类名
+    actionArr[7],
+    require('../img/changeW2x.png'),
+    drawShape // 📌
+  ),
+  'data-separator': {
+    group: 'activity',
+    separator: true,
+  },
+  'data-title': {
+    group: 'activity',
+    titleName: 'Data manipulation',
+  },
+  'create.newvariable': createAction(
+    'bpmn:Task',
+    'activity',
+    '', // 🙋‍♂️ 使用图片后，记得修改成自己的类名
+    actionArr[8],
+    require('../img/newVariableW2x.png'),
+    drawShape // 📌
+  ),
+  'create.dataCalculation': createAction(
+    'bpmn:Task',
+    'activity',
+    '', // 🙋‍♂️ 使用图片后，记得修改成自己的类名
+    actionArr[9],
+    require('../img/calculationW2x.png'),
+    drawShape // 📌x
+  ),
+  'create.dataInput': createAction(
+    'bpmn:Task',
+    'activity',
+    '', // 🙋‍♂️ 使用图片后，记得修改成自己的类名
+    actionArr[10],
+    require('../img/dataInputW2x.png'),
+    drawShape // 📌
+  ),
+  'create.dataOutput  ': createAction(
+    'bpmn:Task',
+    'activity',
+    '', // 🙋‍♂️ 使用图片后，记得修改成自己的类名
+    actionArr[11],
+    require('../img/dataOutputW2x.png'),
+    drawShape // 📌
+  ),
+  'dat1-separator': {
+    group: 'activity',
+    separator: true,
+  },
+  'data1-title': {
+    group: 'activity',
+    titleName: 'Data manipulation',
+  },
+
   'create.gttes1': createAction(
     'bpmn:Task',
     'activity',
     'bpmn-icon-task-custom-bing', // 🙋‍♂️ 使用图片后，记得修改成自己的类名
-    '启动定时器',
+    actionArr[12],
     require('../img/task.png'),
-    drawShape, // 📌
-    '4'
+    drawShape // 📌
   ),
-
   'create.gttest8': createAction(
     'bpmn:Task',
     'activity',
     'bpmn-icon-task-custom-bing', // 🙋‍♂️ 使用图片后，记得修改成自己的类名
-    '启动定时器',
+    actionArr[13],
     require('../img/task.png'),
-    drawShape, // 📌
-    '4'
+    drawShape // 📌
   ),
-  'create.gttest7': createAction(
-    'bpmn:Task',
-    'activity',
-    'bpmn-icon-task-custom-bing', // 🙋‍♂️ 使用图片后，记得修改成自己的类名
-    '启动定时器',
-    require('../img/task.png'),
-    drawShape, // 📌
-    '4'
-  ),
-  'create.gttest6': createAction(
-    'bpmn:Task',
-    'activity',
-    'bpmn-icon-task-custom-bing', // 🙋‍♂️ 使用图片后，记得修改成自己的类名
-    '启动定时器',
-    require('../img/task.png'),
-    drawShape, // 📌
-    '4'
-  ),
-  'create.gttest5': createAction(
-    'bpmn:Task',
-    'activity',
-    'bpmn-icon-task-custom-bing', // 🙋‍♂️ 使用图片后，记得修改成自己的类名
-    '启动定时器',
-    require('../img/task.png'),
-    drawShape, // 📌
-    '4'
-  ),
-  'create.gttest4': createAction(
-    'bpmn:Task',
-    'activity',
-    'bpmn-icon-task-custom-bing', // 🙋‍♂️ 使用图片后，记得修改成自己的类名
-    '启动定时器',
-    require('../img/task.png'),
-    drawShape, // 📌
-    '4'
-  ),
-  'create.dengyu': createAction(
-    'bpmn:IntermediateThrowEvent',
-    'event',
-    'bpmn-customIcon-collect', // 🙋‍♂️ 使用图片后，记得修改成自己的类名
-    '并发',
-    require('../img/collectW2x.png'),
-    drawShape,
-    '6'
-  ),
-  // 'create.exclusive-gateway': createAction(
-  //   //互斥网关
-  //   'bpmn:ExclusiveGateway',
-  //   'gateway',
-  //   'bpmn-icon-gateway-xor',
-  //   'Create ExclusiveGateway',
-  //   '',
-  //   drawShape
-  // ),
-  // 'create.parallel-gateway': createAction(
-  //   //并行网关
-  //   'bpmn:ParallelGateway',
-  //   'gateway',
-  //   'bpmn-icon-gateway-parallel',
-  //   'Create ParallelGateway',
-  //   '',
-  //   drawShape
-  // ),
-  // 'create.inclusive-gateway': createAction(
-  //   //相容网关
-  //   'bpmn:InclusiveGateway',
-  //   'gateway',
-  //   'bpmn-icon-gateway-or',
-  //   'Create InclusiveGateway',
-  //   '',
-  //   drawShape
-  // ),
-  // 'create.complex-gateway': createAction(
-  //   //复杂网关
-  //   'bpmn:ComplexGateway',
-  //   'gateway',
-  //   'bpmn-icon-gateway-complex',
-  //   'Create ComplexGateway',
-  //   ''
-  // ),
-  // 'create.event-based-gateway': createAction(
-  //   //事件网关
-  //   'bpmn:EventBasedGateway',
-  //   'gateway',
-  //   'bpmn-icon-gateway-eventbased',
-  //   'Create EventbasedGateway',
-  //   '',
-  //   drawShape
-  // ),
+  'all-separator': {
+    group: 'activity',
+    separator: true,
+  },
 }
 export default exportPalette

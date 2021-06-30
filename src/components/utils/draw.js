@@ -5,7 +5,7 @@ import {
   remove as svgRemove,
 } from 'tiny-svg'
 
-// 自定义画直线
+// 自定义画横线
 function drawLine(parentNode, height, length, strokeColor) {
   let line = svgCreate('line')
   svgAttr(line, {
@@ -19,8 +19,23 @@ function drawLine(parentNode, height, length, strokeColor) {
   svgAppend(parentNode, line)
   return line
 }
+
+// 自定义画竖线
+function drawHorizonLine(parentNode, width, length, strokeColor) {
+  let line = svgCreate('line')
+  svgAttr(line, {
+    x1: width,
+    y1: 0,
+    x2: width,
+    y2: length,
+    stroke: strokeColor || '#000',
+    strokeWidth: 2,
+  })
+  svgAppend(parentNode, line)
+  return line
+}
 // 自定义画椭圆
-function drawCircle(parentNode, width, height, strokeColor) {
+function drawEllipse(parentNode, width, height, strokeColor) {
   var cx = width / 2,
     cy = height / 2
 
@@ -32,6 +47,23 @@ function drawCircle(parentNode, width, height, strokeColor) {
     fill: strokeColor || '#000',
   })
 
+  svgAppend(parentNode, circle)
+
+  return circle
+}
+
+function drawCircle(parentNode, point, length, attrs) {
+  let circle = svgCreate('circle')
+  let obj = {
+    cx: point[0],
+    cy: point[1],
+    r: length,
+    fill: 'none',
+    stroke: 'black',
+    strokeWidth: 2,
+  }
+  Object.assign(obj, attrs)
+  svgAttr(circle, obj)
   svgAppend(parentNode, circle)
 
   return circle
@@ -103,10 +135,12 @@ function drawPath(parentNode, d, attrs) {
   return path
 }
 
-// 自定义循环
-function drawLoop(parentNode, path) {
-  svgAppend(parentNode, path)
-  return path
+export {
+  drawLine,
+  drawCircle,
+  drawRect,
+  drawDiamond,
+  drawPath,
+  drawHorizonLine,
+  drawEllipse,
 }
-
-export { drawLine, drawCircle, drawRect, drawDiamond, drawPath, drawLoop }

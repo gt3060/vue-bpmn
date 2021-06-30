@@ -240,11 +240,13 @@ Palette.prototype._update = function () {
     var html =
       entry.html ||
       (entry.separator
-        ? '<hr class="separator" />'
+        ? '<hr class="separator" style="margin-bottom: 7px"/>'
         : entry.titleName
         ? `<div class="titleNameStyle">${entry.titleName}</div>`
-        : '<div class="entry" ></div>')
+        : '<div class="entry" style="height:70px" draggable="true"></div>')
+    // console.log('**************html***********', html)
     var control = domify(html)
+    // console.log('**************control***********', control)
     container.appendChild(control)
 
     if (!entry.separator) {
@@ -259,7 +261,16 @@ Palette.prototype._update = function () {
       }
 
       if (entry.imageUrl) {
-        control.appendChild(domify('<img src="' + entry.imageUrl + '">'))
+        control.appendChild(
+          domify(
+            '<img src="' +
+              entry.imageUrl +
+              '">' +
+              '<div class="entryFont">' +
+              entry.title +
+              '</div>'
+          )
+        )
       }
     }
   })

@@ -165,6 +165,10 @@
     >
       <li>历史记录</li>
     </ul>
+    <el-input
+      :value="inputValue"
+      @input="handleInput"
+    />
   </div>
 </template>
 
@@ -210,6 +214,7 @@ export default {
         width: "",
         height: ""
       },
+      inputValue: '',
       element: {},
       users: [
         {
@@ -259,26 +264,60 @@ export default {
             let tempS = localStorage.getItem('infoType');
             localStorage.removeItem('infoType');
             let val = '';
-            switch (tempS) {
-              case '2':
-                val = '获取物料';
-                break;
-              case '3':
-                val = '输入物料';
-                break;
-              case '4':
-                val = '启动定时器';
-                break;
-              case '5':
-                val = '循环';
-                break;
-              case '6':
-                val = "判断";
-                break;
-              case '7':
-                val = "等待";
-                break;
-            }
+            val = tempS
+            // switch (tempS) {
+            //   case '2':
+            //     val = '获取物料';
+            //     break;
+            //   case '3':
+            //     val = '输入物料';
+            //     break;
+            //   case '4':
+            //     val = '启动定时器';
+            //     break;
+            //   case '5':
+            //     val = '循环';
+            //     break;
+            //   case '6':
+            //     val = "判断";
+            //     break;
+            //   case '7':
+            //     val = "等待";
+            //     break;
+            //   case '8':
+            //     val = '新建变量';
+            //     break;
+            //   case '9':
+            //     val = '输入输出';
+            //     break;
+            //   case '10':
+            //     val = '人工输入';
+            //     break;
+            //   case 'materialEnter':
+            //     val = '物料输入';
+            //     break;
+            //   case 'materialOutput':
+            //     val = '物料输出';
+            //     break;
+            //   case 'materialObtain':
+            //     val = '获取物料';
+            //     break;
+            //   case 'materialFreed':
+            //     val = '物料释放';
+            //     break;
+            //   case 'materialChange':
+            //     val = '物料变更';
+            //     break;
+            //   case 'dataCalculation':
+            //     val = '数据计算';
+            //     break;
+            //   case 'dataInput':
+            //     val = '数据输入';
+            //     break;
+            //   case 'dataOutput':
+            //     val = '数据输出';
+            //     break;
+            // }
             this.nameChange(val);
             this.flag = false;
           }
@@ -303,6 +342,13 @@ export default {
     }
   },
   methods: {
+    handleInput (e) {
+      let inputArr = e.split('')
+      if (this.inputValue === '' && e === '.') return;
+      let inputValue = inputArr.filter(item => item === '.').length;
+      if (inputValue > 1) return;
+      this.inputValue = e;
+    },
     // 鼠标右键打开列表
     handleRight (e) {
       let event = event || window.event;

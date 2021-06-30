@@ -4,5 +4,6 @@ export {
   drawRect,
   drawDiamond,
   drawPath,
-  drawLoop,
+  drawHorizonLine,
+  drawEllipse
 } from './draw'

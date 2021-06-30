@@ -339,7 +339,7 @@ export default {
               // console.log('this.viewer', this.viewer.get('elementRegistry'));
             } else if (eventType === 'element.hover') {
               // 鼠标滑过节点后想要做的处理
-              console.log('鼠标经过节点啦~')
+              // console.log('鼠标经过节点啦~')
             } else if (eventType === 'shape.added') {
               console.log("_______________________新增一个shape节点", element);
               // if(element.type === '')
@@ -393,12 +393,12 @@ export default {
   .canvas {
     width: 100%;
     height: 100%;
-    background: #f6f8fa;
+    // background: #f6f8fa;
     /deep/ .djs-palette {
-      width: 250px;
-      .separator{
-        // margin-top: 22%;
-      }
+      width: 280px;
+      overflow-y: scroll;
+      height: 85%;
+      background: white;
     }
     /deep/ .bjs-powered-by {
       display: none;
