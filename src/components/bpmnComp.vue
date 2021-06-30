@@ -9,7 +9,10 @@
       class="panel"
     ></div> -->
     <div v-if="viewer">
-      <properComp :modeler="viewer"></properComp>
+      <properComp
+        :modeler="viewer"
+        @changeShowProperty="changeShowProperty"
+      ></properComp>
     </div>
   </div>
 </template>
@@ -30,9 +33,12 @@ import CustomDescriptor from './config/CustomDescriptor.json'
 
 export default {
   name: 'bpmn',
+  props: {
+  },
   data () {
     return {
-      viewer: null
+      viewer: null,
+      isShowProperty: false,
     }
   },
   components: {
@@ -75,8 +81,9 @@ export default {
         self: CustomDescriptor
       }
     })
-    console.log('this.viewer.additionalModules', this.viewer.additionalModules)
+    console.log('this.viewer.additionalModules', this.viewer.additionalModules);
     this.createNewDiagram() // 新增流程定义
+    this.$emit('viewer', this.viewer);
   },
   methods: {
     createNewDiagram () {
@@ -318,16 +325,17 @@ export default {
       const eventTypes = ['element.click', 'element.hover', 'shape.added']
       eventTypes.forEach((eventType) => {
         eventBus.on(eventType, (e) => {
-          const { element } = e
-          if (!element.parent) return
+          const { element } = e;
+          if (!element.parent) return;
           if (!e || element.type === 'bpmn:Process') {
             return false
           } else {
             if (eventType === 'element.click') {
               // 节点点击后想要做的处理
               // 此时想要点击节点后，拿到节点实例，通过外部输入更新节点名称
-              this.currentElement = element
-              // console.log(element);
+              this.currentElement = element;
+              this.isShowProperty = true;
+              console.log(element, '---------______________elementClick');
               // console.log('this.viewer', this.viewer.get('elementRegistry'));
             } else if (eventType === 'element.hover') {
               // 鼠标滑过节点后想要做的处理
@@ -344,6 +352,9 @@ export default {
           }
         })
       })
+    },
+    changeShowProperty () {
+      this.isShowProperty = false;
     },
     saveDiagram (done) {
       // 把传入的done再传给bpmn原型的saveXML函数调用
@@ -382,8 +393,12 @@ export default {
   .canvas {
     width: 100%;
     height: 100%;
+    background: #f6f8fa;
     /deep/ .djs-palette {
-      width: 143px;
+      width: 250px;
+      .separator{
+        // margin-top: 22%;
+      }
     }
     /deep/ .bjs-powered-by {
       display: none;

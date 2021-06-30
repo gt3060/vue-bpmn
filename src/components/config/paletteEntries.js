@@ -202,6 +202,11 @@ function prependTo(newNode, parentNode, siblingNode) {
 }
 
 let exportPalette = {
+  'matrix-title': {
+    //工具分割线
+    group: 'activity',
+    titleName: 'Matrix components',
+  },
   'create.gttest1': createAction(
     'bpmn:Task',
     'activity',
@@ -247,6 +252,17 @@ let exportPalette = {
     drawShape, // 📌
     '6'
   ),
+  'gatew2ay-separator': {
+    //网关分割线
+    group: 'activity',
+    separator: true,
+  },
+  'matrix2-title': {
+    //工具分割线
+    group: 'activity',
+    titleName: 'Ma22trix components',
+  },
+
   'create.gttes23': createAction(
     'bpmn:Task',
     'activity',
@@ -323,9 +339,9 @@ let exportPalette = {
   'create.dengyu': createAction(
     'bpmn:IntermediateThrowEvent',
     'event',
-    'bpmn-icon-start-event-none', // 🙋‍♂️ 使用图片后，记得修改成自己的类名
+    'bpmn-customIcon-collect', // 🙋‍♂️ 使用图片后，记得修改成自己的类名
     '并发',
-    '',
+    require('../img/collectW2x.png'),
     drawShape,
     '6'
   ),

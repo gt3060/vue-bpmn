@@ -52,22 +52,7 @@
           ></el-input>
         </el-form-item>
       </template>
-      <el-button @click="handleLeft('left')">左对齐</el-button>
-      <el-button @click="handleLeft('right')">右对齐</el-button>
-      <el-button @click="handleLeft('top')">上对齐</el-button>
-      <el-button
-        @click="handleLeft('bottom')"
-        style="margin-top:12px"
-      >下对齐</el-button>
-      <!-- <el-button
-        @click="processUndo"
-        style="margin-top:12px"
-      >撤销</el-button>
-      <el-button
-        @click="processRedo"
-        style="margin-top:12px"
-      >恢复</el-button>
-      <el-button
+      <!--  <el-button
         @click="processRestart"
         style="margin-top:12px"
       >重新绘制</el-button> -->
@@ -171,6 +156,7 @@
         </el-select>
       </el-form-item>
     </el-form>
+    <el-button size="mini">Save process</el-button>
     <div @contextmenu.prevent="handleRight">单击右键</div>
     <ul
       v-show="visible"
@@ -190,7 +176,7 @@ export default {
       type: Object,
       required: true,
       default: () => { }
-    }
+    },
   },
   computed: {
     userTask () {
@@ -351,7 +337,10 @@ export default {
         const element = e.newSelection[0];
         this.element = element;
         console.log('---selection.changed', element, this.form);
-        if (!element) return;
+        if (!element) {
+          this.$emit('changeShowProperty', false)
+          return;
+        };
         this.form = {
           ...element.businessObject,
           ...element.businessObject.$attrs
@@ -439,31 +428,6 @@ export default {
       if (this.element) {
 
       }
-    },
-    // 左对齐
-    handleLeft (align) {
-      const Selection = this.modeler.get("selection");
-      const SelectedElements = Selection.get();
-      const AlignElements = this.modeler.get("alignElements");
-      if (!SelectedElements || SelectedElements.length <= 1) {
-        this.$message.warning("请按住 Ctrl/Shift 键选择多个元素对齐");
-        return;
-      }
-      this.$confirm("自动对齐可能造成图形变形，是否继续？", "警告", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      }).then(() => AlignElements.trigger(SelectedElements, align));
-    },
-
-    // 恢复
-    processRedo () {
-      this.modeler.get("commandStack").redo();
-    },
-
-    // 撤销
-    processUndo () {
-      this.modeler.get("commandStack").undo();
     },
 
     processRestart () { },

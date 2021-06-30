@@ -241,8 +241,9 @@ Palette.prototype._update = function () {
       entry.html ||
       (entry.separator
         ? '<hr class="separator" />'
-        : '<div class="entry" draggable="true"></div>')
-
+        : entry.titleName
+        ? `<div class="titleNameStyle">${entry.titleName}</div>`
+        : '<div class="entry" ></div>')
     var control = domify(html)
     container.appendChild(control)
 
