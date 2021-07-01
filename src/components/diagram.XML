@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_0qnjqfg" targetNamespace="http://bpmn.io/schema/bpmn" exporter="bpmn-js (https://demo.bpmn.io)" exporterVersion="8.6.0">
+  <bpmn:process id="Process_0coajcg" isExecutable="false">
+    <bpmn:task id="Activity_1cojvvu" name="输入物料">
+      <bpmn:outgoing>Flow_13cur33</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Activity_1vzyu40" name="获取物料">
+      <bpmn:outgoing>Flow_1482bqh</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:intermediateThrowEvent id="Event_0tnw83s" name="">
+      <bpmn:incoming>Flow_13cur33</bpmn:incoming>
+      <bpmn:incoming>Flow_1482bqh</bpmn:incoming>
+    </bpmn:intermediateThrowEvent>
+    <bpmn:sequenceFlow id="Flow_13cur33" sourceRef="Activity_1cojvvu" targetRef="Event_0tnw83s" />
+    <bpmn:sequenceFlow id="Flow_1482bqh" sourceRef="Activity_1vzyu40" targetRef="Event_0tnw83s" />
+    <bpmn:parallelGateway id="Gateway_0yokimf" name="" />
+    <bpmn:task id="Activity_0kk0s1o" name="物料输出" newType="maOutput" />
+    <bpmn:task id="Activity_151fadt" name="获取物料" newType="getMat" />
+    <bpmn:task id="Activity_1dio9sj" name="物料输入" newType="maenter" />
+    <bpmn:task id="Activity_0q665pf" name="新建变量" />
+    <bpmn:task id="Activity_1t1nk3v" name="数据计算" newType="dataCal" />
+    <bpmn:task id="Activity_1qv0i57" name="数据输入" newType="dataInput" />
+    <bpmn:task id="Activity_0zx8w66" name="数据输出" newType="dataOutput" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_0coajcg">
+      <bpmndi:BPMNEdge id="Flow_1482bqh_di" bpmnElement="Flow_1482bqh">
+        <di:waypoint x="430" y="230" />
+        <di:waypoint x="430" y="275" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_13cur33_di" bpmnElement="Flow_13cur33">
+        <di:waypoint x="230" y="230" />
+        <di:waypoint x="230" y="275" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Activity_1cojvvu_di" bpmnElement="Activity_1cojvvu">
+        <dc:Bounds x="180" y="150" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1vzyu40_di" bpmnElement="Activity_1vzyu40">
+        <dc:Bounds x="380" y="150" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0tnw83s_di" bpmnElement="Event_0tnw83s">
+        <dc:Bounds x="155" y="275" width="330" height="30" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_18598hi_di" bpmnElement="Gateway_0yokimf">
+        <dc:Bounds x="295" y="415" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0kk0s1o_di" bpmnElement="Activity_0kk0s1o">
+        <dc:Bounds x="70" y="490" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_151fadt_di" bpmnElement="Activity_151fadt">
+        <dc:Bounds x="350" y="520" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1dio9sj_di" bpmnElement="Activity_1dio9sj">
+        <dc:Bounds x="480" y="400" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0q665pf_di" bpmnElement="Activity_0q665pf">
+        <dc:Bounds x="160" y="630" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1t1nk3v_di" bpmnElement="Activity_1t1nk3v">
+        <dc:Bounds x="510" y="590" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1qv0i57_di" bpmnElement="Activity_1qv0i57">
+        <dc:Bounds x="20" y="370" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0zx8w66_di" bpmnElement="Activity_0zx8w66">
+        <dc:Bounds x="180" y="370" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

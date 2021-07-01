@@ -8,7 +8,6 @@ import { is } from 'bpmn-js/lib/util/ModelUtil'
 import { isAny } from 'bpmn-js/lib/features/modeling/util/ModelingUtil'
 
 const HIGH_PRIORITY = 1500
-// const TASK_BORDER_RADIUS = 2
 
 export default class CustomRenderer extends BaseRenderer {
   constructor(eventBus, bpmnRenderer, paletteEntries, customToolEntries) {
@@ -49,35 +48,15 @@ export default class CustomRenderer extends BaseRenderer {
     } else if (optimazationArr.includes(element.type)) {
       return drawOptimazationShape(parentNode, element, this.bpmnRenderer)
     }
-    console.log('---基础渲染')
     return this.bpmnRenderer.drawShape(parentNode, element)
   }
-
-  // getShapePath(shape) {
-  //   if (is(shape, 'bpmn:Task')) {
-  //     return getRoundRectPath(shape, TASK_BORDER_RADIUS)
-  //   }
-
-  //   return this.bpmnRenderer.getShapePath(shape)
-  // }
 }
+
 // 优化svg图形构造
 function drawOptimazationShape(parentNode, element, bpmnRenderer) {
-  let type = element.type
-  let shape 
-  // let color = ''
+  let shape
   console.log('+bpmnbpmn:Data22222222++++', bpmnRenderer, shape, element)
-  // if (type !== 'bpmn:StartEvent') {
-  //   shape = drawLine(parentNode, 10, 300, 'black')
-  //   shape = drawLine(parentNode, 20, 300, 'black')
-  //   return shape
-  // }
   return shape
 }
 
-CustomRenderer.$inject = [
-  'eventBus',
-  'bpmnRenderer',
-  'config.paletteEntries',
-  // 'bpmnTools.customTools',
-]
+CustomRenderer.$inject = ['eventBus', 'bpmnRenderer', 'config.paletteEntries']

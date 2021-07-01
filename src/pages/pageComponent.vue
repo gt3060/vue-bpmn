@@ -13,9 +13,18 @@
         ></customButton>
       </template>
       <div class="saveBtnStyle">
-        <el-button size="mini" class="saveBtnItem">Save process</el-button>
-        <el-button size="mini" class="saveBtnItem">Compilation</el-button>
-        <el-button size="mini" class="saveBtnItem">Implementation</el-button>
+        <el-button
+          size="mini"
+          class="saveBtnItem"
+        >Save process</el-button>
+        <el-button
+          size="mini"
+          class="saveBtnItem"
+        >Compilation</el-button>
+        <el-button
+          size="mini"
+          class="saveBtnItem"
+        >Implementation</el-button>
       </div>
 
       <!-- <el-upload
@@ -65,6 +74,7 @@ import topWImg from '../components/img/topW.png'
 import bottomWImg from '../components/img/bottomW.png'
 import horizontallyWImg from '../components/img/horizontallyW.png'
 import verticalCenterWImg from '../components/img/verticalCenterW.png'
+import deleteWImg from '../components/img/deleteW.png'
 export default {
   data () {
     return {
@@ -198,6 +208,12 @@ export default {
           img: bottomWImg,
           type: 'bottom'
         },
+        {
+          label: 'Delete',
+          img: deleteWImg,
+          type: 'delete',
+          groupClass: 'group'
+        }
       ],
     }
   },
@@ -228,8 +244,8 @@ export default {
         this.processRedo();
       } else if (['left', 'right', 'top', 'bottom', 'center', 'middle'].includes(data)) {
         this.handleAlign(data);
-      } else if (data === 'vertical') {
-        this.handleVertical();
+      } else if (data === 'delete') {
+        this.handleDeleteElement();
       }
     },
 
@@ -295,22 +311,21 @@ export default {
       }).then(() => AlignElements.trigger(SelectedElements, align));
     },
 
-    handleVertical () {
-      const Selection = this.bpmnModeler.get("selection");
+    // 删除元素
+    handleDeleteElement () {
+      const Selection = this.bpmnModeler.get('selection');
       const SelectedElements = Selection.get();
-      const distributeElements = this.bpmnModeler.get("distributeElements");
-      if (!SelectedElements || SelectedElements.length <= 1) {
-        this.$message.warning("请按住 Shift 键选择多个元素对齐");
+      const Modeling = this.bpmnModeler.get('modeling');
+      if (!SelectedElements || SelectedElements.length < 1) {
+        this.$message.warning("请按住 Shift 键至少选择一个元素");
         return;
       }
-      let axis = 'horizontal'
-      console.log("++++++++++SelectedElement", SelectedElements)
-      this.$confirm("自动对齐可能造成图形变形，是否继续？", "警告", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      }).then(() => distributeElements.trigger(SelectedElements, axis));
+      let newSelectedElements = SelectedElements.map(item => [item])
+      newSelectedElements.forEach(item => {
+        Modeling.removeElements(item)
+      })
     },
+
     handleRemove (file, fileList) {
       console.log(file, fileList)
     },
@@ -343,9 +358,9 @@ export default {
     margin-left: 50px;
     margin-top: 7px;
     height: 35px;
-    .saveBtnItem{
+    .saveBtnItem {
       margin-right: 10px;
-      background: #00B8A4;
+      background: #00b8a4;
       color: #fff;
     }
   }

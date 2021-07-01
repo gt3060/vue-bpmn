@@ -8,6 +8,7 @@ export default function ContextPadProvider(
   elementFactory,
   create,
   modeling,
+  globalConnect,
   connect
 ) {
   this.create = create
@@ -16,6 +17,7 @@ export default function ContextPadProvider(
   this.bpmnFactory = bpmnFactory
   this.modeling = modeling
   this.connect = connect
+  this.globalConnect = globalConnect
   config = config || {}
   if (config.autoPlace !== false) {
     this._autoPlace = injector.get('autoPlace', false)
@@ -33,59 +35,48 @@ ContextPadProvider.$inject = [
   'create',
   'modeling',
   'connect',
+  'globalConnect',
 ]
 
 ContextPadProvider.prototype.getContextPadEntries = function (element) {
-  const { autoPlace, create, elementFactory, translate, modeling } = this
+  const {
+    autoPlace,
+    create,
+    elementFactory,
+    translate,
+    modeling,
+    globalConnect,
+    connect,
+  } = this
   // 删除功能
   function removeElement(e) {
     modeling.removeElements([element])
   }
 
-  function clickElement(e) {
-    console.log(element)
-    // window.localStorage.setItem('nodeInfo', JSON.stringify(element))
-    // window.localStorage.setItem('nodeVisible', 'true')
-    store.commit('SETNODEINFO', element)
-    store.commit('TOGGLENODEVISIBLE', true)
-  }
-
-  function appendTask(event, element) {
-    console.log(autoPlace)
-    if (autoPlace) {
-      const shape = elementFactory.createShape({ type: 'bpmn:Task' })
-      autoPlace.append(element, shape)
-    } else {
-      appendTaskStart(event, element)
-    }
-  }
-
-  function appendTaskStart(event) {
-    console.log(event)
-    const shape = elementFactory.createShape({ type: 'bpmn:Task' })
-    create.start(event, shape, element)
-  }
-
-  function editElement() {
-    // 创建编辑图标
-    return {
-      group: 'edit',
-      className: 'icon-custom icon-custom-edit',
-      title: translate('编辑'),
-      action: {
-        click: clickElement,
-      },
-    }
-  }
-
+  // contextPad删除icon
   function deleteElement() {
     return {
       group: 'edit',
-      className: 'icon-custom icon-custom-delete',
+      className: 'bpmn-icon-customdelete',
       title: translate('删除'),
       action: {
         click: removeElement,
       },
+    }
+  }
+
+  // contextPad连接icon
+  function connectElement() {
+    return {
+      group: 'tools',
+      className: 'bpmn-icon-customconnection',
+      title: translate('Activate the global connect tool'),
+      action: {
+        click: function (event, element) {
+          globalConnect.start(event, element)
+        },
+      },
+      // imageUrl: require('../../img/connectW2x.png'),
     }
   }
 
@@ -99,7 +90,7 @@ ContextPadProvider.prototype.getContextPadEntries = function (element) {
     //     dragstart: appendTaskStart,
     //   },
     // },
-    // edit: editElement(),
+    connect: connectElement(),
     delete: deleteElement(),
   }
 }

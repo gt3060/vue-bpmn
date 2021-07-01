@@ -115,11 +115,11 @@ export default {
   }
 }
 .groupStyle {
-  margin-left: 45px;
+  margin-left: 30px;
 }
 .btnZoomGroup {
   width: 200px;
-  margin: 5px 25px 0px 50px;
+  margin: 5px 16px 0px 30px;
   text-align: center;
   border-radius: 0px 2px 2px 0px;
   .btnScaleFontStyle {

@@ -67,24 +67,6 @@ export default class CustomContextPad {
       //     dragstart: appendServiceTaskStart(SUITABILITY_SCORE_LOW),
       //   },
       // },
-      // 'append.average-task': {
-      //   group: 'model',
-      //   className: 'bpmn-icon-task yellow',
-      //   title: translate('Append Task with average suitability score'),
-      //   action: {
-      //     click: appendServiceTask(SUITABILITY_SCORE_AVERGE),
-      //     dragstart: appendServiceTaskStart(SUITABILITY_SCORE_AVERGE),
-      //   },
-      // },
-      // 'append.high-task': {
-      //   group: 'model',
-      //   className: 'bpmn-icon-task green',
-      //   title: translate('Append Task with high suitability score'),
-      //   action: {
-      //     click: appendServiceTask(SUITABILITY_SCORE_HIGH),
-      //     dragstart: appendServiceTaskStart(SUITABILITY_SCORE_HIGH),
-      //   },
-      // },
     }
   }
 }

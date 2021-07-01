@@ -4,33 +4,55 @@
   background-repeat: no-repeat;
   background-position: center;
 }
+
 .icon-custom-delete {
-  background-image: url('https://hexo-blog-1256114407.cos.ap-shenzhen-fsi.myqcloud.com/delete.png');
+  background: url('https://hexo-blog-1256114407.cos.ap-shenzhen-fsi.myqcloud.com/delete.png') center no-repeat !important;
 }
-.bpmn-icon-task-top{
+
+.bpmn-icon-task-top {
   margin-top: 7px;
 }
-.titleNameStyle{
+
+.titleNameStyle {
   /* border:1px solid black */
   text-align: left;
   padding: 7px 0px 3px 15px;
   color: '#cb'
 }
-.titleNameStyle:first-child{
+
+.titleNameStyle:first-child {
   padding-top: 15px
 }
-.entry{
+
+.entry {
   /* border:1px solid black; */
   margin-top: 7px;
   margin-left: 7px;
   margin-right: 10px;
 }
-.entry:after{
+
+.entry:after {
   display: block;
 }
-.entryFont{
+
+.entryFont {
   font-size: 10px;
   line-height: 16px;
   width: 50px;
   margin-top: -5px;
+}
+
+.bpmn-icon-customconnection {
+  background: url(../components/img/connectW2x.png) center no-repeat !important;
+  background-size: cover !important;
+}
+
+.djs-context-pad .entry:hover {
+  /* 重新修改了 hover 之后的样式 */
+  border: 1px solid #1890ff;
+}
+
+.bpmn-icon-customdelete {
+  background: url(../components/img/deleteW.png) center no-repeat !important;
+  background-size: cover !important;
 }

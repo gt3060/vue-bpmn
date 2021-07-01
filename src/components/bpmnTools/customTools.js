@@ -85,36 +85,38 @@ PaletteProvider.prototype.getPaletteEntries = function (element) {
     'hand-tool': {
       //抓手工具
       group: 'tools',
-      className: 'bpmn-icon-hand-tool',
-      title: translate('Activate the hand tool'),
+      className: '',
+      title: translate('Hand'),
       action: {
         click: function (event) {
           handTool.activateHand(event)
         },
       },
+      imageUrl: require('../img/dragW2x.png'),
     },
     'lasso-tool': {
       //索套工具
       group: 'tools',
-      className: 'bpmn-icon-lasso-tool',
-      title: translate('Activate the lasso tool'),
+      className: '',
+      title: translate('Group'),
       action: {
         click: function (event) {
-          console.log(event, '********************************event')
           lassoTool.activateSelection(event)
         },
       },
+      imageUrl: require('../img/groupW2x.png'),
     },
     'global-connect-tool': {
       //全局连接工具
       group: 'tools',
-      className: 'bpmn-icon-connection-multi',
-      title: translate('Activate the global connect tool'),
+      className: '',
+      title: translate('Connect'),
       action: {
         click: function (event) {
           globalConnect.toggle(event)
         },
       },
+      imageUrl: require('../img/connectW2x.png'),
     },
     'tool-separator': {
       //工具分割线
@@ -131,7 +133,7 @@ PaletteProvider.prototype.getPaletteEntries = function (element) {
       'bpmn:StartEvent',
       'event',
       'bpmn-customIcon-start',
-      translate('begin'),
+      translate('开始'),
       require('../img/start2x.png')
     ),
     'create.end-event': createAction(
@@ -139,7 +141,7 @@ PaletteProvider.prototype.getPaletteEntries = function (element) {
       'bpmn:EndEvent',
       'event',
       'bpmn-customIcon-end',
-      translate('end'),
+      translate('结束'),
       require('../img/endW2x.png')
     ),
     // 'create.exclusive-gateway': createAction(
@@ -154,7 +156,7 @@ PaletteProvider.prototype.getPaletteEntries = function (element) {
       'bpmn:ParallelGateway',
       'gateway',
       'bpmn-customIcon-collection',
-      translate('collection'),
+      translate('汇集'),
       require('../img/collectionW2x.png')
     ),
     // 'create.inclusive-gateway': createAction(
@@ -183,7 +185,6 @@ PaletteProvider.prototype.getPaletteEntries = function (element) {
     //   group: 'gateways',
     //   separator: true,
     // },
-    
     // 'create.task': createAction(
     //   //空白任务
     //   'bpmn:Task',

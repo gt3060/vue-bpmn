@@ -1,7 +1,7 @@
 <template>
   <div
-    class="property-panel"
     ref="properComp"
+    class="property-panel"
   >
     <el-form
       :inline="true"
@@ -165,10 +165,6 @@
     >
       <li>历史记录</li>
     </ul>
-    <el-input
-      :value="inputValue"
-      @input="handleInput"
-    />
   </div>
 </template>
 
@@ -216,6 +212,7 @@ export default {
       },
       inputValue: '',
       element: {},
+      direction: 'rtl',
       users: [
         {
           value: "zhangsan",
@@ -260,65 +257,45 @@ export default {
         console.log("++++element监听", newVal, this.nameSplit, !this.sequenceFlow, this.form);
         if (!newVal) return;
         if (!this.form.name) {
+          let defineTypeCompObj = {
+            物料输入: 'maenter',
+            输入物料: 'enterma',
+            物料变更: 'machange',
+            数据计算: 'dataCal',
+            物料输出: 'maOutput',
+            输入输出: 'inputOut',
+            获取物料: 'getMat',
+            物料释放: 'maRelease',
+            数据输入: 'dataInput',
+            数据输出: 'dataOutput'
+          }
+          let defineTypeCompArr = [
+            '物料输入',
+            '输入物料',
+            '物料变更',
+            '数据计算',
+            '物料输出',
+            '输入输出',
+            '获取物料',
+            '物料释放',
+            '数据输入',
+            '数据输出']
           if (!this.sequenceFlow) {
             let tempS = localStorage.getItem('infoType');
             localStorage.removeItem('infoType');
             let val = '';
-            val = tempS
-            // switch (tempS) {
-            //   case '2':
-            //     val = '获取物料';
-            //     break;
-            //   case '3':
-            //     val = '输入物料';
-            //     break;
-            //   case '4':
-            //     val = '启动定时器';
-            //     break;
-            //   case '5':
-            //     val = '循环';
-            //     break;
-            //   case '6':
-            //     val = "判断";
-            //     break;
-            //   case '7':
-            //     val = "等待";
-            //     break;
-            //   case '8':
-            //     val = '新建变量';
-            //     break;
-            //   case '9':
-            //     val = '输入输出';
-            //     break;
-            //   case '10':
-            //     val = '人工输入';
-            //     break;
-            //   case 'materialEnter':
-            //     val = '物料输入';
-            //     break;
-            //   case 'materialOutput':
-            //     val = '物料输出';
-            //     break;
-            //   case 'materialObtain':
-            //     val = '获取物料';
-            //     break;
-            //   case 'materialFreed':
-            //     val = '物料释放';
-            //     break;
-            //   case 'materialChange':
-            //     val = '物料变更';
-            //     break;
-            //   case 'dataCalculation':
-            //     val = '数据计算';
-            //     break;
-            //   case 'dataInput':
-            //     val = '数据输入';
-            //     break;
-            //   case 'dataOutput':
-            //     val = '数据输出';
-            //     break;
-            // }
-            this.nameChange(val);
+            val = tempS;
+
+            if (defineTypeCompArr.includes(val)) {
+              // const modeling = this.modeler.get('modeling');
+              let properties = {
+                newType: defineTypeCompObj[val], // 新增属性，在xml文件以新属性展示
+              }
+              // modeling.updateProperties(this.element, properties)
+              this.nameChange(val, properties);
+            } else {
+              this.nameChange(val);
+            }
             this.flag = false;
           }
         } else {
@@ -342,13 +319,6 @@ export default {
     }
   },
   methods: {
-    handleInput (e) {
-      let inputArr = e.split('')
-      if (this.inputValue === '' && e === '.') return;
-      let inputValue = inputArr.filter(item => item === '.').length;
-      if (inputValue > 1) return;
-      this.inputValue = e;
-    },
     // 鼠标右键打开列表
     handleRight (e) {
       let event = event || window.event;
@@ -380,17 +350,25 @@ export default {
       // })
       // 监听节点选择变化
       this.modeler.on("selection.changed", e => {
+        this.nameSplit = [];
         const element = e.newSelection[0];
+        // this.form = {};
+        // console.log("------先前this.form", this.form, element)
         this.element = element;
-        console.log('---selection.changed', element, this.form);
         if (!element) {
-          this.$emit('changeShowProperty', false)
+          // this.$emit('changeShowProperty', false)
           return;
         };
+        let labelArr = ['Label', 'Connection'];
+        let shapType = this.element ? this.element.__proto__.constructor.name : '';
         this.form = {
           ...element.businessObject,
           ...element.businessObject.$attrs
         };
+        if (labelArr.includes(shapType)) {
+          this.nameSplit = this.form.name
+        }
+        console.log('---selection.changed', element, this.form);
         if (element.businessObject.name && element.id === this.form.id) {
           this.nameSplit = element.businessObject.name.split('：');
           this.form.name = this.isEmpty(this.nameSplit[0]);
@@ -401,6 +379,7 @@ export default {
       });
       //  监听节点属性变化
       this.modeler.on("element.changed", e => {
+        this.nameSplit = []
         const { element } = e;
         console.log('---element.changed', element, this.form)
         if (!element) return;
@@ -419,8 +398,16 @@ export default {
       return ''
     },
     // 属性面板名称，更新回流程节点
-    nameChange (name) {
-      this.element && this.updateProperties({ name });
+    nameChange (name, props) {
+      if (!this.element) return;
+      if (!props) {
+        this.updateProperties({ name });
+        return;
+      } else {
+        Object.assign(props, { name });
+        this.updateProperties(props)
+      }
+
       // const modeling = this.modeler.get("modeling");
       // if (this.element) {
       // modeling.updateLabel(this.element, name);
@@ -429,7 +416,7 @@ export default {
     valueChange (value) {
       const modeling = this.modeler.get("modeling");
       let shapType = this.element ? this.element.__proto__.constructor.name : '';
-      let labelArr = ['Label', 'Connection'];
+      let labelArr = ['Label'];
       if (labelArr.includes(shapType)) {
         this.updateProperties({ name: this.form.name });
         return;
@@ -509,7 +496,8 @@ export default {
   top: 0px;
   border-left: 1px solid #cccccc;
   padding: 20px 0;
-  width: 300px;
+  width: 18%;
   height: 100%;
+  box-shadow: -1px 0 5px #888888;
 }
 </style>

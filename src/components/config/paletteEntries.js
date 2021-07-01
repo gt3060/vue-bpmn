@@ -268,7 +268,7 @@ let exportPalette = {
     'bpmn:IntermediateThrowEvent',
     'event',
     'bpmn-customIcon-collect', // 🙋‍♂️ 使用图片后，记得修改成自己的类名
-    'collect',
+    '并行',
     require('../img/collectW2x.png'),
     drawShape
   ),
@@ -277,7 +277,7 @@ let exportPalette = {
     'activity',
     'bpmn-icon-task-custom-bing', // 🙋‍♂️ 使用图片后，记得修改成自己的类名
     actionArr[0],
-    require('../img/task.png'),
+    require('../img/loopW2x.png'),
     drawShape // 📌
   ),
   'create.gttes4': createAction(
@@ -293,7 +293,7 @@ let exportPalette = {
     'activity',
     'bpmn-icon-task-custom-bing', // 🙋‍♂️ 使用图片后，记得修改成自己的类名
     actionArr[2],
-    require('../img/task.png'),
+    require('../img/waitW2x.png'),
     drawShape // 📌
   ),
   'material-separator': {
