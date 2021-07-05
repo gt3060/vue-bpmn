@@ -156,7 +156,10 @@
         </el-select>
       </el-form-item>
     </el-form>
-    <el-button size="mini">Save process</el-button>
+    <el-button
+      size="mini"
+      @click="handleSee"
+    >预览</el-button>
     <div @contextmenu.prevent="handleRight">单击右键</div>
     <ul
       v-show="visible"
@@ -165,6 +168,11 @@
     >
       <li>历史记录</li>
     </ul>
+    <el-input v-model="testInputValue" />
+    <el-button @click="handletest">按钮</el-button>
+    <el-dialog title="预览" width="50%" :visible.sync="previewModelVisible" append-to-body destroy-on-close top="5vh">
+      <highlightjs :language="previewType" :code="previewResult" />
+    </el-dialog>
   </div>
 </template>
 
@@ -246,6 +254,10 @@ export default {
       visible: false, // 右键弹窗展示、隐藏
       left: 0, // 右键弹窗展示、隐藏
       top: 0, // 右键弹窗展示、隐藏
+      testInputValue: '',
+      previewResult: '', 
+      previewType: "xml",
+      previewModelVisible: false,
     };
   },
   mounted () {
@@ -319,6 +331,26 @@ export default {
     }
   },
   methods: {
+    handleSee () {
+      this.modeler.saveXML({ format: true }).then(({ xml }) => {
+        this.previewResult = xml;
+        this.previewType = "xml";
+        this.previewModelVisible = true;
+      });
+    },
+    handletest () {
+      if (!this.element) return this.$message({
+        message: '需至少选择一个节点进行添加属性',
+        type: 'warning'
+      });;
+      let moddle = this.modeler.get('moddle');
+      let newElExtensionElements = moddle.create('se:AttrTwo', { value: this.testInputValue });
+      let extensions = moddle.create("bpmn:ExtensionElements", { values: [] })
+      console.log("------window.bpmnInstances.modeling", this.testInputValue, newElExtensionElements, this.element);
+      extensions.values.push(newElExtensionElements);
+      this.updateProperties({ extensionElements: newElExtensionElements });
+      this.testInputValue = ''
+    },
     // 鼠标右键打开列表
     handleRight (e) {
       let event = event || window.event;
@@ -482,6 +514,7 @@ export default {
     },
     // 在这里我们封装一个通用的更新节点属性的方法
     updateProperties (properties) {
+      console.log("+++++++++++", properties)
       const modeling = this.modeler.get("modeling");
       modeling.updateProperties(this.element, properties);
     }
