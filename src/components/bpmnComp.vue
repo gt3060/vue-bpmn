@@ -1,9 +1,10 @@
+
 <template>
   <div class="containers">
     <div
-      class="canvas"
       ref="canvas"
-    ></div>
+      class="canvas"
+    />
     <!-- <div
       id="js-properties-panel"
       class="panel"
@@ -12,46 +13,50 @@
       <properComp
         :modeler="viewer"
         @changeShowProperty="changeShowProperty"
-      ></properComp>
+      />
     </div>
   </div>
 </template>
 
 <script>
-import BpmnModeler from 'bpmn-js/lib/Modeler'; // 引入 bpmn-js
-import paletteEntries from './config/paletteEntries';
-import customRenderer from './renderer';
-import customPalette from './palette';
-// import customContextPad from './contextPad';
-import propertiesProviderModule from 'bpmn-js-properties-panel/lib/provider/camunda';
-import propertiesPanelModule from 'bpmn-js-properties-panel';
-import camundaModdleDescriptor from 'camunda-bpmn-moddle/resources/camunda';
-import properComp from './properComp';
-import CustomModeler from './customModeler';
-import paletteProvider from './bpmnTools';
+/* eslint-disable */
+// import BpmnModeler from 'bpmn-js/lib/Modeler' // 引入 bpmn-js
+import paletteEntries from './config/paletteEntries'
+import customRenderer from './renderer'
+import customPalette from './palette'
+// import propertiesProviderModule from 'bpmn-js-properties-panel/lib/provider/camunda'
+// import propertiesPanelModule from 'bpmn-js-properties-panel'
+import camundaModdleDescriptor from 'camunda-bpmn-moddle/resources/camunda'
+import properComp from './properComp'
+import CustomModeler from './customModeler'
+import paletteProvider from './bpmnTools'
 import CustomDescriptor from './config/CustomDescriptor.json'
+import "bpmn-js/dist/assets/diagram-js.css"; // 左边工具栏以及编辑节点的样式
+import "bpmn-js/dist/assets/bpmn-font/css/bpmn.css";
+import "bpmn-js/dist/assets/bpmn-font/css/bpmn-codes.css";
+import "bpmn-js/dist/assets/bpmn-font/css/bpmn-embedded.css";
 // import diagram from './diagram'
 
 export default {
-  name: 'bpmn',
-  props: {
-  },
-  data () {
-    return {
-      viewer: null,
-      isShowProperty: false,
-    }
-  },
+  name: 'Bpmncomp',
   components: {
     properComp
   },
-  mounted () {
-    const canvas = this.$refs.canvas;
+  props: {
+  },
+  data() {
+    return {
+      viewer: null,
+      isShowProperty: false
+    }
+  },
+  mounted() {
+    const canvas = this.$refs.canvas
     // // // 去除默认工具栏  -- 如果不去除默认工具栏，渲染会出现两个工具栏重叠
     // const modules = BpmnModeler.prototype._modules
-    // const index = modules.findIndex(it => it.contextPadProvider);
-    // modules.splice(index, 1);
-    let contextPadProvider = ['value', ''];
+    // const index = modules.findIndex(it => it.contextPadProvider)
+    // modules.splice(index, 1)
+    const contextPadProvider = ['value', '']
 
     // 生成实例
     // this.viewer = new BpmnModeler({
@@ -65,13 +70,13 @@ export default {
         // parent: '#js-properties-panel'
       },
       additionalModules: [
-        propertiesProviderModule,
-        propertiesPanelModule,
-        // customContextPad,
+        // propertiesProviderModule,
+        // propertiesPanelModule,
         customRenderer,
         customPalette,
         contextPadProvider,
-        paletteProvider
+        paletteProvider,
+        { zoomScroll: ['value', ''] }
       ],
       // additionalModules: [{
       //   // contextPadProvider: ['value', ''],
@@ -81,12 +86,12 @@ export default {
         self: CustomDescriptor
       }
     })
-    console.log('this.viewer.additionalModules', this.viewer.additionalModules);
+    console.log('this.viewer.additionalModules', this.viewer.additionalModules)
     this.createNewDiagram() // 新增流程定义
-    this.$emit('viewer', this.viewer);
+    this.$emit('viewer', this.viewer)
   },
   methods: {
-    createNewDiagram () {
+    createNewDiagram() {
       const bpmnXmlStr = `<?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_0qnjqfg" targetNamespace="http://bpmn.io/schema/bpmn" exporter="bpmn-js (https://demo.bpmn.io)" exporterVersion="8.6.0">
   <bpmn:process id="Process_0coajcg" isExecutable="false">
@@ -134,10 +139,10 @@ export default {
       try {
         this.viewer.importXML(bpmnXmlStr).then(res => {
           // 流程图自适应屏幕
-          this.viewer.get('canvas');
-          this.success();
-          this.getNewData();
-          this.getNodeInfoList();
+          this.viewer.get('canvas').zoom('fit-viewport', 'auto')
+          this.success()
+          this.getNewData()
+          this.getNodeInfoList()
         })
       } catch (err) {
         console.log(err)
@@ -145,7 +150,7 @@ export default {
     },
 
     // 获取流程图中所有节点信息
-    getNodeInfoList () {
+    getNodeInfoList() {
       const elementRegistry = this.viewer.get('elementRegistry')
       const userTaskList = elementRegistry.filter(
         (item) => item.type === 'bpmn:UserTask'
@@ -154,46 +159,46 @@ export default {
       console.log(userTaskList)
     },
 
-    saveBpmn () {
+    saveBpmn() {
       this.viewer.saveXML({ format: true }, (err, xml) => {
-        console.log(err, xml);
+        console.log(err, xml)
         // 将xml转换为file
-        let fileName = 'diagram'; // 文件名
-        let { href, filename } = this.setEncoded('xml'.toUpperCase(), fileName, xml);
-        this.downloadFunc(href, filename);
+        const fileName = 'diagram' // 文件名
+        const { href, filename } = this.setEncoded('xml'.toUpperCase(), fileName, xml)
+        this.downloadFunc(href, filename)
       })
     },
 
     // 根据所需类型进行转码并返回下载地址
     // type: xml/svg
-    setEncoded (type, filename = "diagram", data) {
-      const encodedData = encodeURIComponent(data);
+    setEncoded(type, filename = 'diagram', data) {
+      const encodedData = encodeURIComponent(data)
       return {
         filename: `${filename}.${type}`,
-        href: `data:application/${type === "svg" ? "text/xml" : "bpmn20-xml"};charset=UTF-8,${encodedData}`,
+        href: `data:application/${type === 'svg' ? 'text/xml' : 'bpmn20-xml'};charset=UTF-8,${encodedData}`,
         data: data
-      };
-    },
-
-    // 文件下载方法
-    downloadFunc (href, filename) {
-      if (href && filename) {
-        let a = document.createElement("a");
-        a.download = filename; //指定下载的文件名
-        a.href = href; //  URL对象
-        a.click(); // 模拟点击
-        URL.revokeObjectURL(a.href); // 释放URL 对象
       }
     },
 
-    success () {
+    // 文件下载方法
+    downloadFunc(href, filename) {
+      if (href && filename) {
+        const a = document.createElement('a')
+        a.download = filename // 指定下载的文件名
+        a.href = href //  URL对象
+        a.click() // 模拟点击
+        URL.revokeObjectURL(a.href) // 释放URL 对象
+      }
+    },
+
+    success() {
       // 添加绑定事件,
       this.viewer.on('commandStack.changed', () => {
         this.saveDiagram((err, xml) => {
-          console.log(err, xml);
+          console.log(err, xml)
         })
       })
-      // const modeling = this.modeler.get('modeling');
+      // const modeling = this.modeler.get('modeling')
 
       // 判断拖拽是点击还是拖拽
       const eventBus = this.viewer.get('eventBus')
@@ -201,24 +206,24 @@ export default {
       const eventTypes = ['element.click', 'element.hover', 'shape.added']
       eventTypes.forEach((eventType) => {
         eventBus.on(eventType, (e) => {
-          const { element } = e;
-          if (!element.parent) return;
+          const { element } = e
+          if (!element.parent) return
           if (!e || element.type === 'bpmn:Process') {
             return false
           } else {
             if (eventType === 'element.click') {
               // 节点点击后想要做的处理
               // 此时想要点击节点后，拿到节点实例，通过外部输入更新节点名称
-              this.currentElement = element;
-              this.isShowProperty = true;
-              console.log(element, '---------______________elementClick');
-              // console.log('this.viewer', this.viewer.get('elementRegistry'));
+              this.currentElement = element
+              this.isShowProperty = true
+              console.log(element, '---------______________elementClick')
+              // console.log('this.viewer', this.viewer.get('elementRegistry'))
             } else if (eventType === 'element.hover') {
               // 鼠标滑过节点后想要做的处理
               // console.log('鼠标经过节点啦~')
             } else if (eventType === 'shape.added') {
-              console.log("_______________________新增一个shape节点", element);
-              
+              console.log('_______________________新增一个shape节点', element)
+
               // if(element.type === '')
               // let properties = {
               //   newProps: '新增自定义属性', // 新增属性，在xml文件以新属性展示
@@ -230,41 +235,34 @@ export default {
         })
       })
     },
-    changeShowProperty () {
-      this.isShowProperty = false;
+    changeShowProperty() {
+      this.isShowProperty = false
     },
-    saveDiagram (done) {
+    saveDiagram(done) {
       // 把传入的done再传给bpmn原型的saveXML函数调用
       // saveXML需要用try...catch...
       // this.viewer.saveXML({ format: true }, function (err, xml) {
       //   done(err, xml)
       // })
     },
-    getNewData () {
+    getNewData() {
       // this.viewer.on('selection.changed', (e) => {
-      // console.log('监听e', e);
+      // console.log('监听e', e)
       // if (e.newSelection[0]) {
       //   e.newSelection[0].id = `test02_${e.newSelection[0].id.split('_')[1]}`
       // }
       // })
-    },
+    }
   }
 }
 </script>
 
 <style scoped lang="less">
-@import 'bpmn-js/dist/assets/diagram-js.css'; // 左边工具栏以及编辑节点的样式
-@import 'bpmn-js/dist/assets/bpmn-font/css/bpmn.css';
-@import 'bpmn-js/dist/assets/bpmn-font/css/bpmn-codes.css';
-@import 'bpmn-js/dist/assets/bpmn-font/css/bpmn-embedded.css';
-@import 'bpmn-js-properties-panel/dist/assets/bpmn-js-properties-panel.css';
-
 .containers {
   display: flex;
-  // position: absolute;
   background-color: #ffffff;
   width: 80%;
-  height: 100vh;
+  height: 90vh;
   border-top: 1px solid #f6f8fa;
   // overflow: scroll;
   .canvas {
@@ -272,7 +270,7 @@ export default {
     height: 100%;
     // background: #f6f8fa;
     /deep/ .djs-palette {
-      width: 280px;
+      width: 265px;
       overflow-y: auto;
       height: 85%;
       background: white;
